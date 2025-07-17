@@ -23,7 +23,7 @@ RUN ./gradlew clean bootJar -x test
 
 # --- 2. 실행(Runtime) 스테이지 ---
 # 실제 애플리케이션을 실행할 환경을 설정합니다.
-FROM openjdk:17-jre-slim
+FROM openjdk:17-slim
 
 # 작업 디렉토리를 설정합니다.
 WORKDIR /app
