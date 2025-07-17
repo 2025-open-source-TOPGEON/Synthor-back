@@ -44,30 +44,6 @@ public class DataGenerationService {
 
     private Object generateValueByType(String type) {
         return switch (type) {
-<<<<<<< Updated upstream
-            // --- Korean-context data (uses koreanFaker) ---
-            case "full_name" -> koreanFaker.name().fullName();
-            case "first_name" -> koreanFaker.name().firstName();
-            case "last_name" -> koreanFaker.name().lastName();
-            case "address" -> koreanFaker.address().fullAddress();
-            case "street_address" -> koreanFaker.address().streetAddress();
-            case "address_line_2" -> koreanFaker.address().secondaryAddress();
-            case "city" -> koreanFaker.address().city();
-            case "state" -> koreanFaker.address().state();
-            case "country" -> koreanFaker.address().country();
-            case "company_name" -> koreanFaker.company().name();
-            case "job_title" -> koreanFaker.job().title();
-            case "department_corporate" -> koreanFaker.company().profession();
-            case "department_retail" -> koreanFaker.commerce().department();
-            case "product_name" -> koreanFaker.commerce().productName();
-            case "product_category" -> koreanFaker.commerce().department();
-            case "product_description" -> String.join(" ", koreanFaker.lorem().sentences(2));
-            case "bank_name" -> koreanFaker.company().name();
-            case "language" -> koreanFaker.nation().language();
-            case "color" -> koreanFaker.color().name();
-            case "catch_phrase" -> koreanFaker.company().catchPhrase();
-            case "paragraphs" -> String.join("\n\n", koreanFaker.lorem().paragraphs(3));
-=======
             // --- [KOREAN] Person & Personal Info ---
             case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName();
             case "korean_first_name" -> koreanFaker.name().firstName();
@@ -79,7 +55,6 @@ public class DataGenerationService {
             case "first_name" -> defaultFaker.name().firstName();
             case "last_name" -> defaultFaker.name().lastName();
             case "phone" -> defaultFaker.phoneNumber().cellPhone();
->>>>>>> Stashed changes
 
             // --- [KOREAN] Address ---
             case "korean_address" -> koreanFaker.address().fullAddress();
@@ -121,7 +96,7 @@ public class DataGenerationService {
             case "korean_bank_name" -> koreanFaker.company().name();
 
             // --- [ENGLISH] Finance ---
-            case "bank_name" -> defaultFaker.finance().bank();
+            case "bank_name" -> defaultFaker.company().name();
 
             // --- [KOREAN] Misc ---
             case "korean_language" -> koreanFaker.nation().language();
