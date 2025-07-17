@@ -19,8 +19,8 @@ RUN ./gradlew dependencies
 # 5. 소스 코드를 복사합니다.
 COPY src ./src
 
-# 6. 애플리케이션을 빌드합니다. 테스트는 건너뜁니다.
-RUN ./gradlew build -x test
+# 6. Spring Boot 실행 가능 JAR를 빌드합니다. 테스트는 건너뜁니다.
+RUN ./gradlew bootJar -x test
 
 # 7. 애플리케이션 실행 포트를 8080으로 노출합니다.
 EXPOSE 8080
