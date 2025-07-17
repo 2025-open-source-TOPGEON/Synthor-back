@@ -45,9 +45,12 @@ public class DataGenerationService {
     private Object generateValueByType(String type) {
         return switch (type) {
             // --- Korean-context data (uses koreanFaker) ---
-            case "full_name" -> koreanFaker.name().fullName();
-            case "first_name" -> koreanFaker.name().firstName();
-            case "last_name" -> koreanFaker.name().lastName();
+            case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName(); // 붙여쓰기 이름
+            case "full_name" -> defaultFaker.name().fullName(); // 영문 전체 이름
+            case "korean_first_name" -> koreanFaker.name().firstName();
+            case "korean_last_name" -> koreanFaker.name().lastName();
+            case "first_name" -> defaultFaker.name().firstName();
+            case "last_name" -> defaultFaker.name().lastName();
             case "address" -> koreanFaker.address().fullAddress();
             case "street_address" -> koreanFaker.address().streetAddress();
             case "address_line_2" -> koreanFaker.address().secondaryAddress();
