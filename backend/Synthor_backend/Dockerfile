@@ -10,7 +10,10 @@ COPY gradle ./gradle
 COPY build.gradle .
 COPY settings.gradle .
 
-# 4. Gradle 종속성을 다운로드합니다.
+# 4. gradlew 파일에 실행 권한을 부여합니다.
+RUN chmod +x ./gradlew
+
+# 5. Gradle 종속성을 다운로드합니다.
 RUN ./gradlew dependencies
 
 # 5. 소스 코드를 복사합니다.
