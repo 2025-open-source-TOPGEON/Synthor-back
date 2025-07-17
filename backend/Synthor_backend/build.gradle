@@ -42,3 +42,8 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// Specify the main class for the Spring Boot application
+springBoot {
+    mainClass = 'com.synthor.backend.SynthorBackendApplication'
+}
