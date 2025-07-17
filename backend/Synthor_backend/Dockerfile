@@ -1,29 +1,38 @@
-# 1. 베이스 이미지로 Java 17 버전을 사용합니다. (프로젝트의 Java 버전에 맞게 변경 가능)
-FROM openjdk:17-jdk-slim
+# --- 1. 빌드(Build) 스테이지 ---
+# Spring Boot 애플리케이션을 빌드하기 위한 환경을 설정합니다.
+FROM openjdk:17-jdk-slim AS build
 
-# 2. 작업 디렉토리를 설정합니다.
-WORKDIR /app
+# 작업 디렉토리를 설정합니다.
+WORKDIR /workspace
 
-# 3. Gradle 래퍼 파일을 먼저 복사하여 Gradle 종속성을 캐시할 수 있도록 합니다.
+# Gradle 빌드에 필요한 파일들을 먼저 복사합니다.
 COPY gradlew .
 COPY gradle ./gradle
 COPY build.gradle .
 COPY settings.gradle .
 
-# 4. gradlew 파일에 실행 권한을 부여합니다.
+# gradlew에 실행 권한을 부여합니다.
 RUN chmod +x ./gradlew
 
-# 5. Gradle 종속성을 다운로드합니다.
-RUN ./gradlew dependencies
-
-# 5. 소스 코드를 복사합니다.
+# 소스 코드를 복사합니다.
 COPY src ./src
 
-# 6. Spring Boot 실행 가능 JAR를 빌드합니다. 테스트는 건너뜁니다.
-RUN ./gradlew bootJar -x test
+# 이전 빌드 아티팩트를 정리하고, 실행 가능한 JAR 파일을 빌드합니다.
+RUN ./gradlew clean bootJar -x test
 
-# 7. 애플리케이션 실행 포트를 8080으로 노출합니다.
+
+# --- 2. 실행(Runtime) 스테이지 ---
+# 실제 애플리케이션을 실행할 환경을 설정합니다.
+FROM openjdk:17-jre-slim
+
+# 작업 디렉토리를 설정합니다.
+WORKDIR /app
+
+# 빌드 스테이지에서 생성된 JAR 파일만 복사해옵니다.
+COPY --from=build /workspace/build/libs/*.jar app.jar
+
+# 애플리케이션 실행 포트를 8080으로 노출합니다.
 EXPOSE 8080
 
-# 8. 최종적으로 빌드된 JAR 파일을 실행합니다.
-CMD ["java", "-jar", "build/libs/Synthor_backend-0.0.1-SNAPSHOT.jar"]
+# 컨테이너가 시작될 때 애플리케이션을 실행합니다.
+ENTRYPOINT ["java", "-jar", "app.jar"]
