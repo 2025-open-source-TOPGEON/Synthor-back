@@ -1,0 +1,42 @@
+name: "⚙️ Backend Feature"
+description: "백엔드 API/로직/DB 관련 기능 개발을 위한 이슈 템플릿"
+labels: [backend, feature]
+body:
+  - type: textarea
+    id: overview
+    attributes:
+      label: "📌 개요"
+      description: "추가하거나 개선하려는 백엔드 기능을 간단히 설명해 주세요."
+      placeholder: "ex) 사용자 관심 클래스 목록 조회 API 추가"
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: "✅ 작업 내용"
+      description: |
+        구현해야 할 작업을 자유롭게 작성하세요. 예시:
+        - [ ] 컨트롤러/서비스/리포지토리 구성
+        - [ ] DTO, Entity 설계
+        - [ ] 테스트 코드 작성
+
+  - type: textarea
+    id: database
+    attributes:
+      label: "🗄️ DB 관련 변경사항"
+      description: "DB 스키마 변경이나 쿼리 작성이 필요한 경우 입력해 주세요."
+      placeholder: "ex) Class 테이블에 'deleted_at' 칼럼 추가"
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: "📎 참고 자료"
+      description: "API 명세서, ERD, 관련 문서 링크 등"
+      placeholder: "ex) https://docs.google.com/..."
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: "📝 기타 참고 사항"
+      description: "리뷰어나 팀원에게 공유할 특이사항이 있다면 적어주세요."

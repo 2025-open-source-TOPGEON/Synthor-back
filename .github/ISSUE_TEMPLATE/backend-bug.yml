@@ -1,0 +1,50 @@
+name: "🐞 Backend Bug"
+description: "백엔드 API 에러/서버 오류/예외 처리 문제 리포트용 템플릿"
+labels: [backend, bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: "🐛 버그 설명"
+      description: "무슨 문제가 발생했는지 명확하게 적어주세요."
+      placeholder: "ex) 사용자 정보 조회 API 호출 시 500 에러 발생"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "🔁 재현 방법"
+      description: |
+        어떤 조건에서, 어떤 입력으로 문제가 발생하는지 단계별로 작성해 주세요.
+        - 호출한 API 경로 및 파라미터
+        - 어떤 요청 시 어떤 응답이 왔는지
+      placeholder: |
+        GET /api/user/1 호출 시
+        응답: 500 Internal Server Error
+
+  - type: textarea
+    id: log
+    attributes:
+      label: "🧾 에러 로그"
+      description: "서버 로그, 콘솔 메시지, 스택 트레이스를 붙여 주세요."
+      placeholder: "ex) NullPointerException at UserService.getUser()"
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "✅ 기대 동작"
+      description: "정상 동작 시 어떤 결과가 나와야 하는지 적어주세요."
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "💻 환경 정보"
+      description: "테스트한 서버 환경, DB, 프레임워크 버전 등"
+      placeholder: "ex) Spring Boot 3.2.2, MySQL 8.0.36"
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: "📝 기타 참고 사항"
+      description: "관련된 다른 이슈나 문서가 있다면 공유해 주세요."
