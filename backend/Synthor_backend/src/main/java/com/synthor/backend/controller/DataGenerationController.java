@@ -108,7 +108,11 @@ public class DataGenerationController {
      */
     private MediaType getContentTypeForFormat(String format) {
         return switch (format.toLowerCase()) {
-            case "csv" -> MediaType.TEXT_PLAIN; // Or MediaType.valueOf("text/csv")
+            case "csv" -> MediaType.valueOf("text/csv");
+            case "html" -> MediaType.TEXT_HTML;
+            case "sql" -> MediaType.valueOf("application/sql");
+            case "xml" -> MediaType.APPLICATION_XML;
+            case "ldif" -> MediaType.valueOf("text/plain"); // LDIF is often treated as plain text
             case "json" -> MediaType.APPLICATION_JSON;
             default -> MediaType.APPLICATION_JSON;
         };
