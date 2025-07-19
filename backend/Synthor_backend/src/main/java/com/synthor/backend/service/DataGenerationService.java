@@ -61,7 +61,6 @@ public class DataGenerationService {
             case "korean_street_address" -> koreanFaker.address().streetAddress();
             case "korean_city" -> koreanFaker.address().city();
             case "korean_state" -> koreanFaker.address().state();
-            case "korean_country" -> koreanFaker.address().country();
             case "korean_postal_code" -> koreanFaker.address().zipCode();
 
             // --- [ENGLISH] Address ---
@@ -74,8 +73,8 @@ public class DataGenerationService {
 
             // --- [KOREAN] Company & Commerce ---
             case "korean_company_name" -> koreanFaker.company().name();
-            case "korean_job_title" -> koreanFaker.job().title();
-            case "korean_department_corporate" -> koreanFaker.company().profession();
+            case "korean_job_title" -> koreanFaker.company().profession();
+            case "korean_department_corporate" -> koreanFaker.commerce().department();
             case "korean_department_retail" -> koreanFaker.commerce().department();
             case "korean_product_name" -> koreanFaker.commerce().productName();
             case "korean_product_category" -> koreanFaker.commerce().department();
@@ -92,14 +91,7 @@ public class DataGenerationService {
             case "catch_phrase" -> defaultFaker.company().catchPhrase();
             case "product_description" -> String.join(" ", defaultFaker.lorem().sentences(2));
 
-            // --- [KOREAN] Finance ---
-            case "korean_bank_name" -> koreanFaker.company().name();
-
-            // --- [ENGLISH] Finance ---
-            case "bank_name" -> defaultFaker.company().name();
-
             // --- [KOREAN] Misc ---
-            case "korean_language" -> koreanFaker.nation().language();
             case "korean_color" -> koreanFaker.color().name();
 
             // --- [ENGLISH] Misc ---
