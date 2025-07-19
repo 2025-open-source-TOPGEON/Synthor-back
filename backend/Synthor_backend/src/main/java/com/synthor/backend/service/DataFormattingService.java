@@ -78,7 +78,7 @@ public class DataFormattingService {
         String stringValue = value.toString();
         if (stringValue.contains(",") || stringValue.contains("\n") || stringValue.contains("\"")) {
             // Escape existing double quotes by doubling them
-            stringValue = stringValue.replace("\"", """");
+            stringValue = stringValue.replace("\"", "\"\"");
             return "\"" + stringValue + "\"";
         }
         return stringValue;
