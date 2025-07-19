@@ -18,6 +18,14 @@ public class DataGenerationService {
     // For locale-neutral or English-based data (e.g., emails, domains)
     private final Faker defaultFaker = new Faker(Locale.ENGLISH);
 
+    // Predefined Korean data for types with no direct library support
+    private static final String[] KOREAN_JOB_TITLES = {"팀장", "부장", "과장", "대리", "사원", "개발자", "디자이너", "기획자", "마케터"};
+    private static final String[] KOREAN_DEPARTMENTS_CORPORATE = {"인사팀", "개발팀", "디자인팀", "마케팅팀", "영업팀", "재무팀", "기획팀"};
+    private static final String[] KOREAN_DEPARTMENTS_RETAIL = {"의류", "가전", "식품", "잡화", "뷰티", "스포츠", "도서"};
+    private static final String[] KOREAN_PRODUCT_NAMES = {"신비한 물약", "튼튼한 망치", "빛나는 검", "지혜의 책", "행운의 목걸이", "투명 드래곤"};
+    private static final String[] KOREAN_PRODUCT_CATEGORIES = {"전자기기", "패션의류", "뷰티", "도서/음반", "스포츠/레저", "생활용품"};
+    private static final String[] KOREAN_CATCH_PHRASES = {"혁신을 선도합니다", "당신의 삶을 바꾸는 기술", "최고의 품질, 최상의 선택", "세상을 연결하는 솔루션", "미래를 향한 끝없는 도전"};
+
     public List<Map<String, Object>> generateData(DataGenerationRequest request) {
         List<Map<String, Object>> generatedData = new ArrayList<>();
         int count = request.getCount();
@@ -73,12 +81,12 @@ public class DataGenerationService {
 
             // --- [KOREAN] Company & Commerce ---
             case "korean_company_name" -> koreanFaker.company().name();
-            case "korean_job_title" -> koreanFaker.company().profession();
-            case "korean_department_corporate" -> koreanFaker.commerce().department();
-            case "korean_department_retail" -> koreanFaker.commerce().department();
-            case "korean_product_name" -> koreanFaker.commerce().productName();
-            case "korean_product_category" -> koreanFaker.commerce().department();
-            case "korean_catch_phrase" -> koreanFaker.company().catchPhrase();
+            case "korean_job_title" -> KOREAN_JOB_TITLES[defaultFaker.random().nextInt(KOREAN_JOB_TITLES.length)];
+            case "korean_department_corporate" -> KOREAN_DEPARTMENTS_CORPORATE[defaultFaker.random().nextInt(KOREAN_DEPARTMENTS_CORPORATE.length)];
+            case "korean_department_retail" -> KOREAN_DEPARTMENTS_RETAIL[defaultFaker.random().nextInt(KOREAN_DEPARTMENTS_RETAIL.length)];
+            case "korean_product_name" -> KOREAN_PRODUCT_NAMES[defaultFaker.random().nextInt(KOREAN_PRODUCT_NAMES.length)];
+            case "korean_product_category" -> KOREAN_PRODUCT_CATEGORIES[defaultFaker.random().nextInt(KOREAN_PRODUCT_CATEGORIES.length)];
+            case "korean_catch_phrase" -> KOREAN_CATCH_PHRASES[defaultFaker.random().nextInt(KOREAN_CATCH_PHRASES.length)];
             case "korean_product_description" -> String.join(" ", koreanFaker.lorem().sentences(2));
 
             // --- [ENGLISH] Company & Commerce ---
