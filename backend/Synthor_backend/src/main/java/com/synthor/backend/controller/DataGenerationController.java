@@ -68,7 +68,7 @@ public class DataGenerationController {
     @PostMapping("/manual-generate")
     public ResponseEntity<String> manualGenerateData(
             @RequestBody DataGenerationRequest request,
-            @Parameter(description = "반환받을 데이터 포맷 (json, csv 등)", example = "csv")
+            @Parameter(description = "반환받을 데이터 포맷 (json, csv, html, sql, xml, ldif)", example = "csv")
             @RequestParam(defaultValue = "json") String format) throws JsonProcessingException {
 
         // 1. Generate the core data
@@ -85,7 +85,7 @@ public class DataGenerationController {
     @PostMapping("/ai-generate")
     public ResponseEntity<String> aiGenerateData(
             @RequestBody String query,
-            @Parameter(description = "반환받을 데이터 포맷 (json, csv 등)", example = "csv")
+            @Parameter(description = "반환받을 데이터 포맷 (json, csv, html, sql, xml, ldif)", example = "csv")
             @RequestParam(defaultValue = "json") String format) throws JsonProcessingException {
         // 1. Parse the natural language query using the NLP service
         DataGenerationRequest request = nlpService.parseQuery(query);
