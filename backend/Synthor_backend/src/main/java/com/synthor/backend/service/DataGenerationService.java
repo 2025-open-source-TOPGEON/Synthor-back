@@ -57,6 +57,7 @@ public class DataGenerationService {
             case "korean_first_name" -> koreanFaker.name().firstName();
             case "korean_last_name" -> koreanFaker.name().lastName();
             case "korean_phone" -> koreanFaker.phoneNumber().cellPhone();
+            case "korean_mobile_phone" -> "010-" + defaultFaker.number().numberBetween(1000, 10000) + "-" + defaultFaker.number().numberBetween(1000, 10000);
 
             // --- [ENGLISH] Person & Personal Info ---
             case "full_name" -> defaultFaker.name().fullName();
