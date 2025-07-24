@@ -48,12 +48,72 @@ public class DataGenerationService {
             "PO Box 57575", "16th Floor", "Room 1373", "Room 1541",
             "PO Box 7326", "Apt 767", "Suite 70"
     };
+    private static final String[] KOREAN_BANK_NAMES = {
+            "한국은행", "한국산업은행", "중소기업은행", "한국수출입은행", "수협은행", "NH농협은행", "KB국민은행", "우리은행",
+            "SC제일은행", "한국씨티은행", "iM뱅크", "하나은행", "신한은행", "부산은행", "경남은행", "광주은행", "전북은행", "제주은행",
+            "케이뱅크", "카카오뱅크", "토스뱅크", "도이체방크", "JP모건체이스", "뱅크오브아메리카", "BNP파리바", "중국공상은행",
+            "미즈호은행", "MUFG"
+    };
     private static final String[] KOREAN_ADDRESS_LINE_2_EXAMPLES = {
             "101동 1204호", "가나아파트 302동 501호", "행복빌라 203호", "사무실 A동 301호",
             "지하 1층", "옥탑방", "별관 2층", "본관 10층", "102동 2001호", "다성빌라 101호",
             "현대타워 1503호", "7층", "201호", "사랑채", "별관 사무동 301호", "12층 스카이라운지",
             "A블록 101동 101호", "B상가 205호", "지하상가 13호", "연구동 404호", "강의동 502호",
             "학생회관 301실", "2공학관 512호", "창조관 707호", "301호 (3층)", "1205호 (12층)"
+    };
+    private static final String[] APP_BUNDLE_ID_EXAMPLES = {
+            "com.vistaprint.Zontrax", "uk.co.dailymail.Bitchip", "fr.google.Aerified", "com.shutterfly.Bitwolf",
+            "net.behance.Tempsoft", "com.hugedomains.Cardify", "au.com.google.Alphazap", "ru.liveinternet.Kanlam",
+            "com.aol.Tin", "com.sciencedirect.Treeflex", "com.theatlantic.Sonsing", "com.reddit.Kanlam",
+            "com.chronoengine.Fix San", "de.google.It", "tv.ustream.Job", "edu.uiuc.Duobam", "com.dell.Trippledex",
+            "com.microsoft.Cardify", "cz.phoca.Sonair", "com.hao123.Sonair", "com.wp.Lotstring", "com.vinaora.Fintone",
+            "org.gmpg.Bamity", "com.indiatimes.Zathin", "br.com.google.Mat Lam Tam", "uk.co.dailymail.Prodder",
+            "io.pen.Bitchip", "io.pen.Opela", "com.alibaba.Regrant", "com.alibaba.Fix San", "edu.umn.Viva",
+            "com.wikia.Namfix", "com.hubpages.Span", "com.cdbaby.Flexidy", "com.reddit.Mat Lam Tam", "com.ebay.Opela",
+            "com.squidoo.Voltsillam", "uk.ac.cam.Cardguard", "com.imgur.Domainer", "jp.japanpost.Bitchip",
+            "co.t.Temp", "com.bizjournals.Stim", "uk.co.guardian.Viva", "com.usatoday.Daltfresh",
+            "com.over-blog.Lotlux", "com.rediff.Hatity", "net.behance.Voltsillam", "gov.dot.Stronghold",
+            "com.elegantthemes.Domainer", "com.yelp.Zamit", "com.bloomberg.Home Ing", "com.livejournal.Veribet",
+            "gov.census.Voltsillam", "io.pen.Trippledex", "com.patch.Trippledex", "com.marriott.Transcof",
+            "com.booking.Greenlam", "co.g.Bitchip", "com.posterous.Bamity", "com.photobucket.Cardify",
+            "com.fotki.Bytecard", "br.com.uol.Sonair", "com.dell.Zathin", "au.com.google.Sonair",
+            "org.unicef.Zoolab", "gov.senate.Stronghold", "org.wikimedia.Flowdesk", "com.live.Pannier",
+            "com.forbes.Bamity", "com.fc2.Subin", "com.imdb.Fintone", "hk.com.google.Solarbreeze",
+            "com.xrea.Lotlux", "com.squarespace.Matsoft", "com.lycos.Stim", "ru.google.Bitchip",
+            "com.1688.Sub-Ex", "ru.ucoz.Prodder", "com.yellowbook.Bigtax", "com.ifeng.Toughjoyfax",
+            "com.msn.Subin", "gov.va.Gembucket", "net.jalbum.Regrant", "com.nbcnews.Keylex", "net.ovh.Treeflex",
+            "gov.state.Trippledex", "com.studiopress.Namfix", "com.newsvine.Hatity", "ru.ucoz.Konklux",
+            "com.spotify.Duobam", "edu.umn.Holdlamis", "ru.yandex.Fintone", "com.com.Trippledex", "com.zdnet.Viva",
+            "com.examiner.Alphazap", "com.yolasite.Voyatouch", "com.nba.Span", "com.hao123.Bitchip",
+            "be.youtu.Rank", "com.microsoft.Konklux"
+    };
+    private static final String[] BANK_NAME_EXAMPLES = {
+            "Sparkasse Mülheim an der Ruhr", "BNP Paribas", "Raiffeisenbank Schladming-Gröbming eGen",
+            "BGL BNP Paribas", "MUFG UNION BANK", "Caisse régionale de crédit agricole mutuel de la Martinique et de la Guyane",
+            "BMO HARRIS BANK", "BRANCH BANKING & TRUST COMPANY", "WELLS FARGO BANK", "Siemens Bank GmbH",
+            "CAPITAL ONE", "Raiffeisenkasse Ernstbrunn eGen", "CADENCE BANK", "FIRST STATE BANK",
+            "PEOPLES STATE BANK", "AMERIS BANK", "BANK OF AMERICA", "BANCA POPOLARE PUGLIESE - SOCIETA' COOPERATIVA PER AZIONI",
+            "Deutsche WertpapierService Bank AG", "Banque Palatine", "VR-Bank Südwestpfalz eG Pirmasens - Zweibrücken",
+            "Raiffeisenbank Neukirchen an der Vöckla eGen", "EASTERN BANK", "UNICREDIT, SOCIETA' PER AZIONE",
+            "PNC BANK", "VALLEY NATIONAL BANK", "WEBSTER BANK", "COMMUNITY BANK", "Raiffeisenkasse Retz-Pulkautal eGen",
+            "FIRST NATIONAL BANK", "BANCO BPM SOCIETA' PER AZIONE", "NORD/LB Luxembourg S.A. Covered Bond Bank",
+            "TECHVENTURES BANK S.A.", "Erste&Steiermärkische Bank d.d.", "Raiffeisenbank Wörthersee-Landskron-Gegendtal eG",
+            "Cleariestown Credit Union Limited", "Caja Rural de Villamalea, S. Coop. de Crédito Agrario de Castilla-La Mancha",
+            "BRED Gestion", "DANSKE BANK A/S", "UNITED BANK", "ABN AMRO Hypotheken Groep B.V.",
+            "Raiffeisenbank Austria d.d.", "AB \"Fjord Bank\"", "CENTENNIAL BANK", "FIRSTBANK",
+            "Raiffeisenbank Parkstetten eG", "Vereinigte VR Bank Kur- und Rheinpfalz eG", "Cooperative Bank of Epirus Ltd",
+            "EAST WEST BANK", "FIFTH THIRD BANK", "Kreissparkasse Göppingen", "US BANK",
+            "Raiffeisenbank Region Radkersburg eGen", "CITIZENS STATE BANK",
+            "BANCA DI CREDITO COOPERATIVO DI VENEZIA, PADOVA E ROVIGO - BANCA ANNIA SOCIETA' COOPERATIVA",
+            "Crédit Agricole S.A.", "BPCE", "Kilmallock Credit Union Limited", "BANCA DEL PIEMONTE S.P.A.",
+            "Volksbank Nottuln eG", "PROSPERITY BANK", "FINANCIAL PARTNERS CREDIT UNION",
+            "Skandinaviska Enskilda Banken AB", "SECURITY STATE BANK", "Landesbank Berlin AG",
+            "Sparkasse im Landkreis Schwandorf", "Raiffeisenbank Bütthard-Gaukönigshofen eG", "Volksbank Lüneburger Heide eG",
+            "Colonya - Caixa D'estalvis de Pollensa", "Raiffeisenbank Region Gallneukirchen eGen", "UMB",
+            "FIRST MERCHANTS BANK", "VAN DE PUT & CO Banquiers Privés", "Volksbank Raiffeisenbank Würzburg eG",
+            "Banque de Commerce et de Placements S.A., succursale de Luxembourg", "Sparkasse Schwäbisch Hall-Crailsheim",
+            "Stadt-Sparkasse Langenfeld (Rhld.)", "Raiffeisenbank Turnau-St. Lorenzen eGen", "UMPQUA BANK",
+            "BANCA NAZIONALE DEL LAVORO S.P.A. (IN FORMA CONTRATTA BNL S.P.A.)", "AS SEB Pank", "KEY BANK", "SECURITY BANK"
     };
 
     public List<Map<String, Object>> generateData(DataGenerationRequest request) {
@@ -125,6 +185,7 @@ public class DataGenerationService {
             case "korean_product_category" -> KOREAN_PRODUCT_CATEGORIES[defaultFaker.random().nextInt(KOREAN_PRODUCT_CATEGORIES.length)];
             case "korean_catch_phrase" -> KOREAN_CATCH_PHRASES[defaultFaker.random().nextInt(KOREAN_CATCH_PHRASES.length)];
             case "korean_product_description" -> String.join(" ", koreanFaker.lorem().sentences(2));
+            case "korean_bank_name" -> KOREAN_BANK_NAMES[defaultFaker.random().nextInt(KOREAN_BANK_NAMES.length)];
 
             // --- [ENGLISH] Company & Commerce ---
             case "company_name" -> defaultFaker.company().name();
@@ -162,6 +223,7 @@ public class DataGenerationService {
             // --- App & Device ---
             case "app_name" -> defaultFaker.app().name();
             case "app_version" -> defaultFaker.app().version();
+            case "app_bundle_id" -> APP_BUNDLE_ID_EXAMPLES[defaultFaker.random().nextInt(APP_BUNDLE_ID_EXAMPLES.length)];
             case "device_model" -> defaultFaker.device().modelName();
             case "device_brand" -> defaultFaker.device().manufacturer();
             case "device_os" -> defaultFaker.device().platform();
@@ -173,6 +235,8 @@ public class DataGenerationService {
             case "currency" -> defaultFaker.currency().name();
             case "iban" -> defaultFaker.finance().iban();
             case "swift_bic" -> defaultFaker.finance().bic();
+            case "bank_name" -> BANK_NAME_EXAMPLES[defaultFaker.random().nextInt(BANK_NAME_EXAMPLES.length)];
+            case "bank_routing_number" -> generateBankRoutingNumber();
 
             // --- Misc ---
             case "paragraphs" -> String.join("\n\n", defaultFaker.lorem().paragraphs(3));
@@ -200,5 +264,11 @@ public class DataGenerationService {
             case 3 -> firstName + defaultFaker.number().digits(3) + "@" + domain;
             default -> firstName + lastName + "@" + domain;
         };
+    }
+
+    private String generateBankRoutingNumber() {
+        int firstDigit = defaultFaker.random().nextInt(4); // 0, 1, 2, 3
+        String remainingDigits = defaultFaker.number().digits(8);
+        return firstDigit + remainingDigits;
     }
 }
