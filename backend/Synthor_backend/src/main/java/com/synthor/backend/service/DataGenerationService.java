@@ -25,6 +25,10 @@ public class DataGenerationService {
     private static final String[] KOREAN_PRODUCT_NAMES = {"신비한 물약", "튼튼한 망치", "빛나는 검", "지혜의 책", "행운의 목걸이", "투명 드래곤"};
     private static final String[] KOREAN_PRODUCT_CATEGORIES = {"전자기기", "패션의류", "뷰티", "도서/음반", "스포츠/레저", "생활용품"};
     private static final String[] KOREAN_CATCH_PHRASES = {"혁신을 선도합니다", "당신의 삶을 바꾸는 기술", "최고의 품질, 최상의 선택", "세상을 연결하는 솔루션", "미래를 향한 끝없는 도전"};
+    private static final String[] GENDERS = {"Female", "Male"};
+    private static final String[] KOREAN_GENDERS = {"여자", "남자"};
+    private static final String[] GENDERS_WITH_NON_BINARY = {"Female", "Male", "Non-binary"};
+    private static final String[] KOREAN_GENDERS_WITH_NON_BINARY = {"여자", "남자", "그 외"};
 
     public List<Map<String, Object>> generateData(DataGenerationRequest request) {
         List<Map<String, Object>> generatedData = new ArrayList<>();
@@ -56,6 +60,8 @@ public class DataGenerationService {
             case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName();
             case "korean_first_name" -> koreanFaker.name().firstName();
             case "korean_last_name" -> koreanFaker.name().lastName();
+            case "korean_gender" -> KOREAN_GENDERS[defaultFaker.random().nextInt(KOREAN_GENDERS.length)];
+            case "korean_gender_with_non_binary" -> KOREAN_GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(KOREAN_GENDERS_WITH_NON_BINARY.length)];
             case "korean_phone" -> koreanFaker.phoneNumber().cellPhone();
             case "korean_mobile_phone" -> "010-" + defaultFaker.number().numberBetween(1000, 10000) + "-" + defaultFaker.number().numberBetween(1000, 10000);
 
@@ -63,6 +69,8 @@ public class DataGenerationService {
             case "full_name" -> defaultFaker.name().fullName();
             case "first_name" -> defaultFaker.name().firstName();
             case "last_name" -> defaultFaker.name().lastName();
+            case "gender" -> GENDERS[defaultFaker.random().nextInt(GENDERS.length)];
+            case "gender_with_non_binary" -> GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(GENDERS_WITH_NON_BINARY.length)];
             case "phone" -> defaultFaker.phoneNumber().cellPhone();
 
             // --- [KOREAN] Address ---
