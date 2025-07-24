@@ -19,12 +19,42 @@ public class DataGenerationService {
     private final Faker defaultFaker = new Faker(Locale.ENGLISH);
 
     // Predefined Korean data for types with no direct library support
-    private static final String[] KOREAN_JOB_TITLES = {"팀장", "부장", "과장", "대리", "사원", "개발자", "디자이너", "기획자", "마케터"};
-    private static final String[] KOREAN_DEPARTMENTS_CORPORATE = {"인사팀", "개발팀", "디자인팀", "마케팅팀", "영업팀", "재무팀", "기획팀"};
-    private static final String[] KOREAN_DEPARTMENTS_RETAIL = {"의류", "가전", "식품", "잡화", "뷰티", "스포츠", "도서"};
-    private static final String[] KOREAN_PRODUCT_NAMES = {"신비한 물약", "튼튼한 망치", "빛나는 검", "지혜의 책", "행운의 목걸이", "투명 드래곤"};
-    private static final String[] KOREAN_PRODUCT_CATEGORIES = {"전자기기", "패션의류", "뷰티", "도서/음반", "스포츠/레저", "생활용품"};
-    private static final String[] KOREAN_CATCH_PHRASES = {"혁신을 선도합니다", "당신의 삶을 바꾸는 기술", "최고의 품질, 최상의 선택", "세상을 연결하는 솔루션", "미래를 향한 끝없는 도전"};
+    private static final String[] KOREAN_JOB_TITLES = {
+            "팀장", "부장", "과장", "대리", "사원", "개발자", "디자이너", "기획자", "마케터", "대표이사", "CEO",
+            "CTO", "CFO", "이사", "상무", "전무", "주임", "연구원", "컨설턴트", "애널리스트", "퍼블리셔", "운영자",
+            "PM", "PO", "데이터 사이언티스트", "QA 엔지니어", "시스템 관리자", "네트워크 관리자", "보안 전문가",
+            "인사 담당자", "총무", "회계 담당자", "법무팀", "고객지원 담당자", "세일즈 매니저", "프로듀서", "아티스트", "작가"
+    };
+    private static final String[] KOREAN_DEPARTMENTS_CORPORATE = {
+            "인사팀", "개발팀", "디자인팀", "마케팅팀", "영업팀", "재무팀", "기획팀", "경영지원팀", "전략기획팀",
+            "R&D센터", "품질관리팀", "고객서비스팀", "홍보팀", "IR팀", "법무팀", "감사팀", "IT지원팀",
+            "데이터분석팀", "해외사업팀", "국내영업팀", "생산관리팀", "물류팀"
+    };
+    private static final String[] KOREAN_DEPARTMENTS_RETAIL = {
+            "의류", "가전", "식품", "잡화", "뷰티", "스포츠", "도서", "신선식품", "가공식품", "생활용품", "주방용품",
+            "인테리어", "가구", "유아동", "완구", "반려동물용품", "헬스케어", "캠핑용품", "자동차용품", "문구", "악기", "여행"
+    };
+    private static final String[] KOREAN_PRODUCT_NAMES = {
+            "신비한 물약", "튼튼한 망치", "빛나는 검", "지혜의 책", "행운의 목걸이", "투명 드래곤", "타임리스 스마트워치",
+            "에코 프렌들리 텀블러", "퀀텀 점프 SSD", "갤럭시 디펜더 케이스", "스카이 하이 드론", "어반 라이더 전동킥보드",
+            "사일런트 나이트 노이즈캔슬링 이어폰", "퓨어-클린 공기청정기", "썬빔 휴대용 충전기", "레인보우 RGB 기계식 키보드",
+            "마그네틱 플로팅 램프", "닥터 웰빙 안마의자", "해피투게더 보드게임", "메모리 포레버 디지털 액자",
+            "원클릭 자동 텐트", "아쿠아 슈즈 2.0", "파워업 프로틴 쉐이크", "슬림핏 요가매트"
+    };
+    private static final String[] KOREAN_PRODUCT_CATEGORIES = {
+            "전자기기", "패션의류", "뷰티", "도서/음반", "스포츠/레저", "생활용품", "컴퓨터/노트북", "가전제품",
+            "스마트폰/태블릿", "카메라", "남성의류", "여성의류", "패션잡화", "신발", "스킨케어", "메이크업", "향수",
+            "헤어/바디", "소설/시/희곡", "경제/경영", "자기계발", "인문/사회/역사", "과학", "만화", "피트니스",
+            "골프", "등산/아웃도어", "낚시", "자전거", "주방용품", "가구/인테리어", "청소/세탁용품", "욕실용품",
+            "건강/의료용품", "식품/음료", "여행/항공권", "E-쿠폰/상품권"
+    };
+    private static final String[] KOREAN_CATCH_PHRASES = {
+            "혁신을 선도합니다", "당신의 삶을 바꾸는 기술", "최고의 품질, 최상의 선택", "세상을 연결하는 솔루션",
+            "미래를 향한 끝없는 도전", "상상, 그 이상의 경험", "디테일의 차이가 명품을 만듭니다", "일상에 특별함을 더하다",
+            "스마트한 생활의 시작", "자연을 담은 건강함", "세상에 없던 새로움", "당신의 가능성을 깨우세요",
+            "문제를 해결하는 가장 간단한 방법", "신뢰할 수 있는 파트너", "내일을 여는 기술", "언제나 당신 곁에",
+            "프리미엄의 기준", "즐거움이 가득한 공간", "합리적인 소비의 시작", "세대를 아우르는 가치"
+    };
     private static final String[] GENDERS = {"Female", "Male"};
     private static final String[] KOREAN_GENDERS = {"여자", "남자"};
     private static final String[] GENDERS_WITH_NON_BINARY = {"Female", "Male", "Non-binary"};
