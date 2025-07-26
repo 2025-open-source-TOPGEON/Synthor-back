@@ -36,6 +36,12 @@ public class NlpService {
         emailField.setType("email_address");
         fields.add(emailField);
 
+        com.synthor.backend.dto.FieldRequest passwordField = new com.synthor.backend.dto.FieldRequest();
+        passwordField.setName("비밀번호");
+        passwordField.setType("password");
+        passwordField.setMinimumLength(10);
+        fields.add(passwordField);
+
         dummyRequest.setFields(fields);
 
         return dummyRequest;

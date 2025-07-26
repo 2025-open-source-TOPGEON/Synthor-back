@@ -160,7 +160,7 @@ public class DataGenerationService {
                 if ("fixed".equalsIgnoreCase(field.getType())) {
                     fieldValue = field.getValue();
                 } else {
-                    fieldValue = generateValueByType(field.getType());
+                    fieldValue = generateValueByType(field);
                 }
                 row.put(fieldName, fieldValue);
             }
@@ -170,7 +170,8 @@ public class DataGenerationService {
         return generatedData;
     }
 
-    private Object generateValueByType(String type) {
+    private Object generateValueByType(FieldRequest field) {
+        String type = field.getType();
         return switch (type) {
             // --- [KOREAN] Person & Personal Info ---
             case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName();
@@ -240,7 +241,15 @@ public class DataGenerationService {
 
             // --- Internet & Tech ---
             case "username" -> defaultFaker.name().username();
-            case "password" -> defaultFaker.internet().password();
+            case "password" -> {
+                Integer minLength = field.getMinimumLength();
+                Integer upper = field.getUpper();
+                int min = (minLength != null) ? minLength : 8;
+                int max = min + 5;
+                boolean includeUppercase = (upper != null && upper > 0);
+
+                yield defaultFaker.internet().password(min, max, includeUppercase);
+            }
             case "email_address" -> generateCustomEmail();
             case "domain_name" -> defaultFaker.internet().domainName();
             case "url" -> defaultFaker.internet().url();
