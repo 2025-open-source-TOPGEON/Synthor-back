@@ -248,10 +248,10 @@ public class DataGenerationService {
                 Integer numbers = field.getNumbers();
                 Integer symbols = field.getSymbols();
                 int min = (minLength != null) ? minLength : 8;
+                int max = min + 5; // Set a reasonable max length
 
-                // For generation, create a regex that allows all character types.
-                // Using a simple set of special characters to avoid complex regex escaping.
-                String allCharsRegex = "[a-zA-Z0-9!@#$%&*]{" + min + "}";
+                // For generation, create a regex that allows all character types and specifies a length range.
+                String allCharsRegex = "[a-zA-Z0-9!@#$%&*]{" + min + "," + max + "}";
                 String specialCharsValidationRegex = ".*[!@#$%&*].*";
 
                 boolean requireUppercase = (upper != null && upper > 0);
