@@ -25,4 +25,8 @@ public class FieldRequest {
     @Schema(description = "비밀번호에 포함될 대문자 최소 개수 (type이 'password'일 때)", example = "1")
     @JsonProperty("upper")
     private Integer upper;
+
+    @Schema(description = "비밀번호에 포함될 소문자 최소 개수 (type이 'password'일 때)", example = "1")
+    @JsonProperty("lower")
+    private Integer lower;
 }
