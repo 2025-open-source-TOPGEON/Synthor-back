@@ -248,25 +248,32 @@ public class DataGenerationService {
                 Integer numbers = field.getNumbers();
                 Integer symbols = field.getSymbols();
                 int min = (minLength != null) ? minLength : 8;
-                int max = min + 5;
-                boolean includeUppercase = (upper != null && upper > 0);
-                boolean includeLowercase = (lower != null && lower > 0);
-                boolean includeDigits = (numbers != null && numbers > 0);
-                boolean includeSpecial = (symbols != null && symbols > 0);
+
+                // For generation, create a regex that allows all character types.
+                // Using a simple set of special characters to avoid complex regex escaping.
+                String allCharsRegex = "[a-zA-Z0-9!@#$%&*]{" + min + "}";
+                String specialCharsValidationRegex = ".*[!@#$%&*].*";
+
+                boolean requireUppercase = (upper != null && upper > 0);
+                boolean requireLowercase = (lower != null && lower > 0);
+                boolean requireDigits = (numbers != null && numbers > 0);
+                boolean requireSpecial = (symbols != null && symbols > 0);
 
                 String password;
                 boolean isPasswordValid;
                 do {
-                    password = defaultFaker.internet().password(min, max, includeUppercase, includeSpecial, includeDigits);
-                    
-                    boolean hasUppercase = !includeUppercase || password.matches(".*[A-Z].*");
-                    boolean hasLowercase = !includeLowercase || password.matches(".*[a-z].*");
-                    boolean hasDigits = !includeDigits || password.matches(".*[0-9].*");
-                    boolean hasSpecial = !includeSpecial || password.matches(".*[^a-zA-Z0-9].*");
+                    // Step 1: Generate a random string from the full character set.
+                    password = defaultFaker.regexify(allCharsRegex);
+
+                    // Step 2: Validate if it meets the minimum requirements.
+                    boolean hasUppercase = !requireUppercase || password.matches(".*[A-Z].*");
+                    boolean hasLowercase = !requireLowercase || password.matches(".*[a-z].*");
+                    boolean hasDigits = !requireDigits || password.matches(".*[0-9].*");
+                    boolean hasSpecial = !requireSpecial || password.matches(specialCharsValidationRegex);
 
                     isPasswordValid = !password.isEmpty() && hasUppercase && hasLowercase && hasDigits && hasSpecial;
 
-                } while (!isPasswordValid);
+                } while (!isPasswordValid); // Step 3: Repeat if not valid.
                 yield password;
             }
             case "email_address" -> generateCustomEmail();
