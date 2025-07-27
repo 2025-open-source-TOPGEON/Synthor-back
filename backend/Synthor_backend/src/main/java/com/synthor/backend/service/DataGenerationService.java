@@ -246,22 +246,25 @@ public class DataGenerationService {
                 Integer upper = field.getUpper();
                 Integer lower = field.getLower();
                 Integer numbers = field.getNumbers();
+                Integer symbols = field.getSymbols();
                 int min = (minLength != null) ? minLength : 8;
                 int max = min + 5;
                 boolean includeUppercase = (upper != null && upper > 0);
                 boolean includeLowercase = (lower != null && lower > 0);
                 boolean includeDigits = (numbers != null && numbers > 0);
+                boolean includeSpecial = (symbols != null && symbols > 0);
 
                 String password;
                 boolean isPasswordValid;
                 do {
-                    password = defaultFaker.internet().password(min, max, includeUppercase, false, includeDigits);
+                    password = defaultFaker.internet().password(min, max, includeUppercase, includeSpecial, includeDigits);
                     
                     boolean hasUppercase = !includeUppercase || password.matches(".*[A-Z].*");
                     boolean hasLowercase = !includeLowercase || password.matches(".*[a-z].*");
                     boolean hasDigits = !includeDigits || password.matches(".*[0-9].*");
+                    boolean hasSpecial = !includeSpecial || password.matches(".*[^a-zA-Z0-9].*");
 
-                    isPasswordValid = !password.isEmpty() && hasUppercase && hasLowercase && hasDigits;
+                    isPasswordValid = !password.isEmpty() && hasUppercase && hasLowercase && hasDigits && hasSpecial;
 
                 } while (!isPasswordValid);
                 yield password;
