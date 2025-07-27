@@ -245,17 +245,25 @@ public class DataGenerationService {
                 Integer minLength = field.getMinimumLength();
                 Integer upper = field.getUpper();
                 Integer lower = field.getLower();
+                Integer numbers = field.getNumbers();
                 int min = (minLength != null) ? minLength : 8;
                 int max = min + 5;
                 boolean includeUppercase = (upper != null && upper > 0);
                 boolean includeLowercase = (lower != null && lower > 0);
+                boolean includeDigits = (numbers != null && numbers > 0);
 
                 String password;
+                boolean isPasswordValid;
                 do {
-                    password = defaultFaker.internet().password(min, max, includeUppercase);
-                } while (password.isEmpty() || 
-                         (includeUppercase && !password.matches(".*[A-Z].*")) ||
-                         (includeLowercase && !password.matches(".*[a-z].*")));
+                    password = defaultFaker.internet().password(min, max, includeUppercase, false, includeDigits);
+                    
+                    boolean hasUppercase = !includeUppercase || password.matches(".*[A-Z].*");
+                    boolean hasLowercase = !includeLowercase || password.matches(".*[a-z].*");
+                    boolean hasDigits = !includeDigits || password.matches(".*[0-9].*");
+
+                    isPasswordValid = !password.isEmpty() && hasUppercase && hasLowercase && hasDigits;
+
+                } while (!isPasswordValid);
                 yield password;
             }
             case "email_address" -> generateCustomEmail();
