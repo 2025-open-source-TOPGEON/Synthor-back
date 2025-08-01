@@ -188,7 +188,24 @@ public class DataGenerationService {
             case "last_name" -> defaultFaker.name().lastName();
             case "gender" -> GENDERS[defaultFaker.random().nextInt(GENDERS.length)];
             case "gender_with_non_binary" -> GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(GENDERS_WITH_NON_BINARY.length)];
-            case "phone" -> defaultFaker.phoneNumber().cellPhone();
+            case "phone" -> {
+                String format = field.getFormat();
+                if (format == null || format.isEmpty()) {
+                    int randomFormat = defaultFaker.random().nextInt(8);
+                    format = switch (randomFormat) {
+                        case 0 -> "###-###-####";
+                        case 1 -> "(###) ###-####";
+                        case 2 -> "### ### ####";
+                        case 3 -> "+# ### ### ####";
+                        case 4 -> "+# (###) ###-####";
+                        case 5 -> "+#-###-###-####";
+                        case 6 -> "#-(###) ###-####";
+                        case 7 -> "##########";
+                        default -> "###-###-####";
+                    };
+                }
+                yield defaultFaker.numerify(format);
+            }
 
             // --- [KOREAN] Address ---
             case "korean_address" -> koreanFaker.address().fullAddress();
