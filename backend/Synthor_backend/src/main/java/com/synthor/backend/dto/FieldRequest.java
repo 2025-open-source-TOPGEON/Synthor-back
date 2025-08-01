@@ -43,4 +43,8 @@ public class FieldRequest {
 
     @Schema(description = "아바타 이미지 크기 (type이 'avatar'일 때)", example = "50x50")
     private String size;
+
+    @Schema(description = "아바타 이미지 형식 (type이 'avatar'일 때, 'png', 'jpg', 'bmp' 중 선택)", example = "jpg")
+    @JsonProperty("image_format")
+    private String imageFormat;
 }

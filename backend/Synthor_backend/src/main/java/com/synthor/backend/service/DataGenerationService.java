@@ -301,12 +301,20 @@ public class DataGenerationService {
             case "ip_v6_address" -> defaultFaker.internet().ipV6Address();
             case "user_agent" -> defaultFaker.internet().userAgent();
             case "avatar" -> {
-                String baseUrl = defaultFaker.avatar().image();
+                String baseUrl = defaultFaker.avatar().image(); // Generates a .png URL by default
+                String imageFormat = field.getImageFormat();
                 String size = field.getSize();
+
+                // Handle image format
+                if (imageFormat != null && (imageFormat.equals("jpg") || imageFormat.equals("bmp"))) {
+                    baseUrl = baseUrl.replace(".png", "." + imageFormat);
+                }
+
+                // Handle size
                 if (size != null && !size.isEmpty() && size.matches("\\d+x\\d+")) {
                     yield baseUrl + "?size=" + size;
                 } else {
-                    yield baseUrl; // Default size from Faker
+                    yield baseUrl;
                 }
             }
 
