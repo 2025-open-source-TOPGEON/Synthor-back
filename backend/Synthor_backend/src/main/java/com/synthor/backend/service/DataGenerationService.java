@@ -300,7 +300,15 @@ public class DataGenerationService {
             case "ip_v4_address" -> defaultFaker.internet().ipV4Address();
             case "ip_v6_address" -> defaultFaker.internet().ipV6Address();
             case "user_agent" -> defaultFaker.internet().userAgent();
-            case "avatar" -> defaultFaker.avatar().image();
+            case "avatar" -> {
+                String baseUrl = defaultFaker.avatar().image();
+                String size = field.getSize();
+                if (size != null && !size.isEmpty() && size.matches("\\d+x\\d+")) {
+                    yield baseUrl + "?size=" + size;
+                } else {
+                    yield baseUrl; // Default size from Faker
+                }
+            }
 
             // --- App & Device ---
             case "app_name" -> defaultFaker.app().name();

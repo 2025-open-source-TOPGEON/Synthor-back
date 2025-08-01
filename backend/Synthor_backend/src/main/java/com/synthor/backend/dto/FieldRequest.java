@@ -40,4 +40,7 @@ public class FieldRequest {
 
     @Schema(description = "전화번호 형식 (type이 'phone'일 때)", example = "###-###-####")
     private String format;
+
+    @Schema(description = "아바타 이미지 크기 (type이 'avatar'일 때)", example = "50x50")
+    private String size;
 }
