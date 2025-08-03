@@ -160,7 +160,7 @@ public class DataGenerationService {
                 if ("fixed".equalsIgnoreCase(field.getType())) {
                     fieldValue = field.getValue();
                 } else {
-                    fieldValue = generateValueByType(field.getType());
+                    fieldValue = generateValueByType(field);
                 }
                 row.put(fieldName, fieldValue);
             }
@@ -170,7 +170,8 @@ public class DataGenerationService {
         return generatedData;
     }
 
-    private Object generateValueByType(String type) {
+    private Object generateValueByType(FieldRequest field) {
+        String type = field.getType();
         return switch (type) {
             // --- [KOREAN] Person & Personal Info ---
             case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName();
@@ -187,7 +188,24 @@ public class DataGenerationService {
             case "last_name" -> defaultFaker.name().lastName();
             case "gender" -> GENDERS[defaultFaker.random().nextInt(GENDERS.length)];
             case "gender_with_non_binary" -> GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(GENDERS_WITH_NON_BINARY.length)];
-            case "phone" -> defaultFaker.phoneNumber().cellPhone();
+            case "phone" -> {
+                String format = field.getFormat();
+                if (format == null || format.isEmpty()) {
+                    int randomFormat = defaultFaker.random().nextInt(8);
+                    format = switch (randomFormat) {
+                        case 0 -> "###-###-####";
+                        case 1 -> "(###) ###-####";
+                        case 2 -> "### ### ####";
+                        case 3 -> "+# ### ### ####";
+                        case 4 -> "+# (###) ###-####";
+                        case 5 -> "+#-###-###-####";
+                        case 6 -> "#-(###) ###-####";
+                        case 7 -> "##########";
+                        default -> "###-###-####";
+                    };
+                }
+                yield defaultFaker.numerify(format);
+            }
 
             // --- [KOREAN] Address ---
             case "korean_address" -> koreanFaker.address().fullAddress();
@@ -240,7 +258,41 @@ public class DataGenerationService {
 
             // --- Internet & Tech ---
             case "username" -> defaultFaker.name().username();
-            case "password" -> defaultFaker.internet().password();
+            case "password" -> {
+                Integer minLength = field.getMinimumLength();
+                Integer upper = field.getUpper();
+                Integer lower = field.getLower();
+                Integer numbers = field.getNumbers();
+                Integer symbols = field.getSymbols();
+                int min = (minLength != null) ? minLength : 8;
+                int max = min + 5; // Set a reasonable max length
+
+                // For generation, create a regex that allows all character types and specifies a length range.
+                String allCharsRegex = "[a-zA-Z0-9!@#$%&*]{" + min + "," + max + "}";
+                String specialCharsValidationRegex = ".*[!@#$%&*].*";
+
+                boolean requireUppercase = (upper != null && upper > 0);
+                boolean requireLowercase = (lower != null && lower > 0);
+                boolean requireDigits = (numbers != null && numbers > 0);
+                boolean requireSpecial = (symbols != null && symbols > 0);
+
+                String password;
+                boolean isPasswordValid;
+                do {
+                    // Step 1: Generate a random string from the full character set.
+                    password = defaultFaker.regexify(allCharsRegex);
+
+                    // Step 2: Validate if it meets the minimum requirements.
+                    boolean hasUppercase = !requireUppercase || password.matches(".*[A-Z].*");
+                    boolean hasLowercase = !requireLowercase || password.matches(".*[a-z].*");
+                    boolean hasDigits = !requireDigits || password.matches(".*[0-9].*");
+                    boolean hasSpecial = !requireSpecial || password.matches(specialCharsValidationRegex);
+
+                    isPasswordValid = !password.isEmpty() && hasUppercase && hasLowercase && hasDigits && hasSpecial;
+
+                } while (!isPasswordValid); // Step 3: Repeat if not valid.
+                yield password;
+            }
             case "email_address" -> generateCustomEmail();
             case "domain_name" -> defaultFaker.internet().domainName();
             case "url" -> defaultFaker.internet().url();
@@ -248,7 +300,23 @@ public class DataGenerationService {
             case "ip_v4_address" -> defaultFaker.internet().ipV4Address();
             case "ip_v6_address" -> defaultFaker.internet().ipV6Address();
             case "user_agent" -> defaultFaker.internet().userAgent();
-            case "avatar" -> defaultFaker.avatar().image();
+            case "avatar" -> {
+                String baseUrl = defaultFaker.avatar().image(); // Generates a .png URL by default
+                String imageFormat = field.getImageFormat();
+                String size = field.getSize();
+
+                // Handle image format
+                if (imageFormat != null && (imageFormat.equals("jpg") || imageFormat.equals("bmp"))) {
+                    baseUrl = baseUrl.replace(".png", "." + imageFormat);
+                }
+
+                // Handle size
+                if (size != null && !size.isEmpty() && size.matches("\\d+x\\d+")) {
+                    yield baseUrl + "?size=" + size;
+                } else {
+                    yield baseUrl;
+                }
+            }
 
             // --- App & Device ---
             case "app_name" -> defaultFaker.app().name();
