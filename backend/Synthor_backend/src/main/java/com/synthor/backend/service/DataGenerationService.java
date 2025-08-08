@@ -191,6 +191,8 @@ public class DataGenerationService {
 
     private Object generateValueByType(FieldRequest field) {
         String type = field.getType();
+        Map<String, Object> constraints = field.getConstraints();
+
         return switch (type) {
             // --- [KOREAN] Person & Personal Info ---
             case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName();
@@ -208,7 +210,7 @@ public class DataGenerationService {
             case "gender" -> GENDERS[defaultFaker.random().nextInt(GENDERS.length)];
             case "gender_with_non_binary" -> GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(GENDERS_WITH_NON_BINARY.length)];
             case "phone" -> {
-                String format = field.getFormat();
+                String format = (String) constraints.get("format");
                 if (format == null || format.isEmpty()) {
                     int randomFormat = defaultFaker.random().nextInt(8);
                     format = switch (randomFormat) {
@@ -278,11 +280,11 @@ public class DataGenerationService {
             // --- Internet & Tech ---
             case "username" -> defaultFaker.name().username();
             case "password" -> {
-                Integer minLength = field.getMinimumLength();
-                Integer upper = field.getUpper();
-                Integer lower = field.getLower();
-                Integer numbers = field.getNumbers();
-                Integer symbols = field.getSymbols();
+                Integer minLength = (Integer) constraints.get("minimum_length");
+                Integer upper = (Integer) constraints.get("upper");
+                Integer lower = (Integer) constraints.get("lower");
+                Integer numbers = (Integer) constraints.get("numbers");
+                Integer symbols = (Integer) constraints.get("symbols");
                 int min = (minLength != null) ? minLength : 8;
                 int max = min + 5; // Set a reasonable max length
 
@@ -321,8 +323,8 @@ public class DataGenerationService {
             case "user_agent" -> defaultFaker.internet().userAgent();
             case "avatar" -> {
                 String baseUrl = defaultFaker.avatar().image(); // Generates a .png URL by default
-                String imageFormat = field.getImageFormat();
-                String size = field.getSize();
+                String imageFormat = (String) constraints.get("image_format");
+                String size = (String) constraints.get("size");
 
                 // Handle image format
                 if (imageFormat != null && (imageFormat.equals("jpg") || imageFormat.equals("bmp"))) {
