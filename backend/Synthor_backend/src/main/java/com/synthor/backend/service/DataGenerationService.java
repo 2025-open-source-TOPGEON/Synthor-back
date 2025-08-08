@@ -240,7 +240,15 @@ public class DataGenerationService {
             case "address" -> defaultFaker.address().fullAddress();
             case "street_address" -> defaultFaker.address().streetAddress();
             case "city" -> defaultFaker.address().city();
-            case "state" -> defaultFaker.address().state();
+            case "state" -> {
+                Object options = constraints.get("options");
+                if (options instanceof List && !((List<?>) options).isEmpty()) {
+                    List<?> optionsList = (List<?>) options;
+                    yield optionsList.get(defaultFaker.random().nextInt(optionsList.size())).toString();
+                } else {
+                    yield defaultFaker.address().state();
+                }
+            }
             case "country" -> defaultFaker.address().country();
             case "postal_code" -> defaultFaker.address().zipCode();
             case "address_line_2" -> ADDRESS_LINE_2_EXAMPLES[defaultFaker.random().nextInt(ADDRESS_LINE_2_EXAMPLES.length)];

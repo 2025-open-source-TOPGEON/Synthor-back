@@ -44,19 +44,25 @@ public class DataGenerationController {
                                     name = "기본 예시",
                                     value = """
                                             {
-                                              "count": 5,
+                                              "count": 100,
                                               "fields": [
                                                 {
+                                                  "name": "userPassword",
+                                                  "type": "password",
+                                                  "constraints": {
+                                                    "minimum_length": 12,
+                                                    "upper": 1,
+                                                    "lower": 1,
+                                                    "numbers": 1,
+                                                    "symbols": 1
+                                                  },
+                                                  "nullablePercent": 50
+                                                },
+                                                {
                                                   "name": "userEmail",
-                                                  "type": "email_address"
-                                                },
-                                                {
-                                                  "name": "userName",
-                                                  "type": "full_name"
-                                                },
-                                                {
-                                                  "name": "company",
-                                                  "type": "company_name"
+                                                  "type": "email_address",
+                                                  "constraints": {},
+                                                  "nullablePercent": 0
                                                 }
                                               ]
                                             }
