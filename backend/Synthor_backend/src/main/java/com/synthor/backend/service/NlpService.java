@@ -39,7 +39,7 @@ public class NlpService {
         com.synthor.backend.dto.FieldRequest passwordField = new com.synthor.backend.dto.FieldRequest();
         passwordField.setName("비밀번호");
         passwordField.setType("password");
-        passwordField.setMinimumLength(10);
+        passwordField.getConstraints().put("minimum_length", 10);
         fields.add(passwordField);
 
         dummyRequest.setFields(fields);

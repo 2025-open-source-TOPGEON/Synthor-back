@@ -151,16 +151,35 @@ public class DataGenerationService {
         int count = request.getCount();
         List<FieldRequest> fields = request.getFields();
 
+        // 각 필드에 대해 null 값을 생성할 인덱스 목록을 미리 계산
+        Map<String, Set<Integer>> nullableIndexes = new HashMap<>();
+        for (FieldRequest field : fields) {
+            Integer nullablePercent = field.getNullablePercent();
+            if (nullablePercent != null && nullablePercent > 0) {
+                int nullableCount = (int) Math.round(count * (nullablePercent / 100.0));
+                Set<Integer> indexes = new HashSet<>();
+                while (indexes.size() < nullableCount) {
+                    indexes.add(defaultFaker.random().nextInt(count));
+                }
+                nullableIndexes.put(field.getName(), indexes);
+            }
+        }
+
         for (int i = 0; i < count; i++) {
             Map<String, Object> row = new LinkedHashMap<>();
             for (FieldRequest field : fields) {
                 String fieldName = field.getName();
                 Object fieldValue;
 
-                if ("fixed".equalsIgnoreCase(field.getType())) {
-                    fieldValue = field.getValue();
+                // 현재 인덱스가 null 값을 생성해야 하는 인덱스인지 확인
+                if (nullableIndexes.containsKey(fieldName) && nullableIndexes.get(fieldName).contains(i)) {
+                    fieldValue = null;
                 } else {
-                    fieldValue = generateValueByType(field);
+                    if ("fixed".equalsIgnoreCase(field.getType())) {
+                        fieldValue = field.getValue();
+                    } else {
+                        fieldValue = generateValueByType(field);
+                    }
                 }
                 row.put(fieldName, fieldValue);
             }
@@ -172,6 +191,8 @@ public class DataGenerationService {
 
     private Object generateValueByType(FieldRequest field) {
         String type = field.getType();
+        Map<String, Object> constraints = field.getConstraints();
+
         return switch (type) {
             // --- [KOREAN] Person & Personal Info ---
             case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName();
@@ -189,7 +210,7 @@ public class DataGenerationService {
             case "gender" -> GENDERS[defaultFaker.random().nextInt(GENDERS.length)];
             case "gender_with_non_binary" -> GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(GENDERS_WITH_NON_BINARY.length)];
             case "phone" -> {
-                String format = field.getFormat();
+                String format = (String) constraints.get("format");
                 if (format == null || format.isEmpty()) {
                     int randomFormat = defaultFaker.random().nextInt(8);
                     format = switch (randomFormat) {
@@ -259,11 +280,11 @@ public class DataGenerationService {
             // --- Internet & Tech ---
             case "username" -> defaultFaker.name().username();
             case "password" -> {
-                Integer minLength = field.getMinimumLength();
-                Integer upper = field.getUpper();
-                Integer lower = field.getLower();
-                Integer numbers = field.getNumbers();
-                Integer symbols = field.getSymbols();
+                Integer minLength = (Integer) constraints.get("minimum_length");
+                Integer upper = (Integer) constraints.get("upper");
+                Integer lower = (Integer) constraints.get("lower");
+                Integer numbers = (Integer) constraints.get("numbers");
+                Integer symbols = (Integer) constraints.get("symbols");
                 int min = (minLength != null) ? minLength : 8;
                 int max = min + 5; // Set a reasonable max length
 
@@ -302,8 +323,8 @@ public class DataGenerationService {
             case "user_agent" -> defaultFaker.internet().userAgent();
             case "avatar" -> {
                 String baseUrl = defaultFaker.avatar().image(); // Generates a .png URL by default
-                String imageFormat = field.getImageFormat();
-                String size = field.getSize();
+                String imageFormat = (String) constraints.get("image_format");
+                String size = (String) constraints.get("size");
 
                 // Handle image format
                 if (imageFormat != null && (imageFormat.equals("jpg") || imageFormat.equals("bmp"))) {
