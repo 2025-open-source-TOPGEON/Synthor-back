@@ -249,7 +249,15 @@ public class DataGenerationService {
                     yield defaultFaker.address().state();
                 }
             }
-            case "country" -> defaultFaker.address().country();
+            case "country" -> {
+                Object options = constraints.get("options");
+                if (options instanceof List && !((List<?>) options).isEmpty()) {
+                    List<?> optionsList = (List<?>) options;
+                    yield optionsList.get(defaultFaker.random().nextInt(optionsList.size())).toString();
+                } else {
+                    yield defaultFaker.address().country();
+                }
+            }
             case "postal_code" -> defaultFaker.address().zipCode();
             case "address_line_2" -> ADDRESS_LINE_2_EXAMPLES[defaultFaker.random().nextInt(ADDRESS_LINE_2_EXAMPLES.length)];
 
