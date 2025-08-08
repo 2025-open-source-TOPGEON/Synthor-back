@@ -151,16 +151,35 @@ public class DataGenerationService {
         int count = request.getCount();
         List<FieldRequest> fields = request.getFields();
 
+        // 각 필드에 대해 null 값을 생성할 인덱스 목록을 미리 계산
+        Map<String, Set<Integer>> nullableIndexes = new HashMap<>();
+        for (FieldRequest field : fields) {
+            Integer nullablePercent = field.getNullablePercent();
+            if (nullablePercent != null && nullablePercent > 0) {
+                int nullableCount = (int) Math.round(count * (nullablePercent / 100.0));
+                Set<Integer> indexes = new HashSet<>();
+                while (indexes.size() < nullableCount) {
+                    indexes.add(defaultFaker.random().nextInt(count));
+                }
+                nullableIndexes.put(field.getName(), indexes);
+            }
+        }
+
         for (int i = 0; i < count; i++) {
             Map<String, Object> row = new LinkedHashMap<>();
             for (FieldRequest field : fields) {
                 String fieldName = field.getName();
                 Object fieldValue;
 
-                if ("fixed".equalsIgnoreCase(field.getType())) {
-                    fieldValue = field.getValue();
+                // 현재 인덱스가 null 값을 생성해야 하는 인덱스인지 확인
+                if (nullableIndexes.containsKey(fieldName) && nullableIndexes.get(fieldName).contains(i)) {
+                    fieldValue = null;
                 } else {
-                    fieldValue = generateValueByType(field);
+                    if ("fixed".equalsIgnoreCase(field.getType())) {
+                        fieldValue = field.getValue();
+                    } else {
+                        fieldValue = generateValueByType(field);
+                    }
                 }
                 row.put(fieldName, fieldValue);
             }

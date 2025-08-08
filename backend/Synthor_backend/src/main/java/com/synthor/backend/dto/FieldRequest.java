@@ -47,4 +47,8 @@ public class FieldRequest {
     @Schema(description = "아바타 이미지 형식 (type이 'avatar'일 때, 'png', 'jpg', 'bmp' 중 선택)", example = "jpg")
     @JsonProperty("image_format")
     private String imageFormat;
+
+    @Schema(description = "데이터의 Nullable 비율 (0-100 사이 값)", example = "10")
+    @JsonProperty("nullablePercent")
+    private Integer nullablePercent = 0;
 }
