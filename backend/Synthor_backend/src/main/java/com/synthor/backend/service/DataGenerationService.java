@@ -5,6 +5,8 @@ import com.synthor.backend.dto.FieldRequest;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -332,7 +334,44 @@ public class DataGenerationService {
             }
             case "email_address" -> generateCustomEmail();
             case "domain_name" -> defaultFaker.internet().domainName();
-            case "url" -> defaultFaker.internet().url();
+            case "url" -> {
+                if (constraints.isEmpty()) {
+                    yield defaultFaker.internet().url();
+                }
+
+                boolean includeProtocol = (boolean) constraints.getOrDefault("protocol", false);
+                boolean includeHost = (boolean) constraints.getOrDefault("host", true); // Host is usually essential
+                boolean includePath = (boolean) constraints.getOrDefault("path", false);
+                boolean includeQuery = (boolean) constraints.getOrDefault("query_string", false);
+
+                StringBuilder sb = new StringBuilder();
+
+                if (includeProtocol) {
+                    sb.append(defaultFaker.options().option("http", "https")).append("://");
+                }
+
+                if (includeHost) {
+                    sb.append(defaultFaker.internet().domainName());
+                }
+
+                if (includePath) {
+                    sb.append("/").append(defaultFaker.lorem().word().toLowerCase());
+                    if (defaultFaker.random().nextBoolean()) {
+                        sb.append("/").append(defaultFaker.lorem().word().toLowerCase());
+                    }
+                }
+
+                if (includeQuery) {
+                    sb.append("?").append(defaultFaker.lorem().word().toLowerCase())
+                      .append("=").append(defaultFaker.lorem().word().toLowerCase());
+                    if (defaultFaker.random().nextBoolean()) {
+                        sb.append("&").append(defaultFaker.lorem().word().toLowerCase())
+                          .append("=").append(defaultFaker.lorem().word().toLowerCase());
+                    }
+                }
+
+                yield sb.toString();
+            }
             case "mac_address" -> defaultFaker.internet().macAddress();
             case "ip_v4_address" -> defaultFaker.internet().ipV4Address();
             case "ip_v6_address" -> defaultFaker.internet().ipV6Address();
@@ -365,7 +404,15 @@ public class DataGenerationService {
 
             // --- Finance ---
             case "credit_card_number" -> defaultFaker.finance().creditCard();
-            case "credit_card_type" -> defaultFaker.business().creditCardType();
+            case "credit_card_type" -> {
+                Object options = constraints.get("options");
+                if (options instanceof List && !((List<?>) options).isEmpty()) {
+                    List<?> optionsList = (List<?>) options;
+                    yield optionsList.get(defaultFaker.random().nextInt(optionsList.size())).toString();
+                } else {
+                    yield defaultFaker.business().creditCardType();
+                }
+            }
             case "product_price" -> defaultFaker.commerce().price();
             case "currency" -> defaultFaker.currency().name();
             case "iban" -> defaultFaker.finance().iban();
@@ -375,8 +422,71 @@ public class DataGenerationService {
 
             // --- Misc ---
             case "paragraphs" -> String.join("\n\n", defaultFaker.lorem().paragraphs(3));
-            case "datetime" -> defaultFaker.date().past(365, TimeUnit.DAYS).toString();
-            case "time" -> DateTimeFormatter.ofPattern("HH:mm:ss").format(defaultFaker.date().birthday().toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
+            case "datetime" -> {
+                String from = (String) constraints.getOrDefault("from", null);
+                String to = (String) constraints.getOrDefault("to", null);
+                String format = (String) constraints.getOrDefault("format", null);
+
+                SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+                Date fromDate, toDate;
+
+                try {
+                    fromDate = (from != null) ? parser.parse(from) : new Date(System.currentTimeMillis() - 31536000000L); // 1 year ago
+                    toDate = (to != null) ? parser.parse(to) : new Date();
+                } catch (ParseException e) {
+                    // Handle parsing error, maybe default to a safe range
+                    fromDate = new Date(System.currentTimeMillis() - 31536000000L);
+                    toDate = new Date();
+                }
+
+                Date randomDate = defaultFaker.date().between(fromDate, toDate);
+
+                if (format != null) {
+                    String pattern = switch (format) {
+                        case "m/d/yyyy" -> "M/d/yyyy";
+                        case "mm/dd/yyyy" -> "MM/dd/yyyy";
+                        case "yyyy-mm-dd" -> "yyyy-MM-dd";
+                        case "yyyy-mm" -> "yyyy-MM";
+                        case "d/m/yyyy" -> "d/M/yyyy";
+                        case "dd/mm/yyyy" -> "dd/MM/yyyy";
+                        default -> "yyyy-MM-dd'T'HH:mm:ss'Z'"; // Default to ISO 8601 format
+                    };
+                    SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+                    yield formatter.format(randomDate);
+                } else {
+                    yield randomDate.toString();
+                }
+            }
+            case "time" -> {
+                String from = (String) constraints.getOrDefault("from", "00:00");
+                String to = (String) constraints.getOrDefault("to", "23:59");
+                String format = (String) constraints.getOrDefault("format", "24hour");
+
+                SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
+                Date fromTime, toTime;
+                try {
+                    fromTime = timeParser.parse(from);
+                    toTime = timeParser.parse(to);
+                } catch (ParseException e) {
+                    // Handle parsing error, default to full day
+                    try {
+                        fromTime = timeParser.parse("00:00");
+                        toTime = timeParser.parse("23:59");
+                    } catch (ParseException ignored) {
+                        // Should not happen with hardcoded values
+                        fromTime = new Date();
+                        toTime = new Date();
+                    }
+                }
+
+                // Generate a random time between from and to
+                long randomTimeMillis = defaultFaker.random().nextLong(fromTime.getTime(), toTime.getTime());
+                Date randomTime = new Date(randomTimeMillis);
+
+                String pattern = "12hour".equalsIgnoreCase(format) ? "hh:mm a" : "HH:mm";
+                SimpleDateFormat timeFormatter = new SimpleDateFormat(pattern, Locale.ENGLISH);
+                yield timeFormatter.format(randomTime);
+            }
             case "latitude" -> defaultFaker.address().latitude();
             case "longitude" -> defaultFaker.address().longitude();
             case "number_between_1_100" -> defaultFaker.number().numberBetween(1, 101);
