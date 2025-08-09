@@ -3,7 +3,6 @@ package com.synthor.backend.service;
 import com.synthor.backend.dto.DataGenerationRequest;
 import com.synthor.backend.dto.FieldRequest;
 import net.datafaker.Faker;
-import net.datafaker.service.CreditCardType;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -404,32 +403,7 @@ public class DataGenerationService {
             case "device_os" -> defaultFaker.device().platform();
 
             // --- Finance ---
-            case "credit_card_number" -> {
-                Object options = constraints.get("options");
-                if (options instanceof List && !((List<?>) options).isEmpty()) {
-                    List<?> optionsList = (List<?>) options;
-                    String selectedCardTypeStr = optionsList.get(defaultFaker.random().nextInt(optionsList.size())).toString();
-
-                    CreditCardType cardType = switch (selectedCardTypeStr.toLowerCase().replace(" ", "")) {
-                        case "visa" -> CreditCardType.VISA;
-                        case "mastercard" -> CreditCardType.MASTERCARD;
-                        case "americanexpress" -> CreditCardType.AMERICAN_EXPRESS;
-                        case "jcb" -> CreditCardType.JCB;
-                        case "chinaunionpay" -> CreditCardType.CHINA_UNIONPAY;
-                        case "maestro" -> CreditCardType.MAESTRO;
-                        case "dinersclubinternational" -> CreditCardType.DINERS_CLUB_INTERNATIONAL;
-                        default -> null;
-                    };
-
-                    if (cardType != null) {
-                        yield defaultFaker.finance().creditCard(cardType).replace("-", "");
-                    } else {
-                        yield defaultFaker.finance().creditCard().replace("-", ""); // Fallback for unsupported types
-                    }
-                } else {
-                    yield defaultFaker.finance().creditCard().replace("-", ""); // Default behavior
-                }
-            }
+            case "credit_card_number" -> defaultFaker.finance().creditCard().replace("-", "");
             case "credit_card_type" -> {
                 Object options = constraints.get("options");
                 if (options instanceof List && !((List<?>) options).isEmpty()) {

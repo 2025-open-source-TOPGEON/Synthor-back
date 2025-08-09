@@ -33,7 +33,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
     // DataFaker: A more up-to-date library for generating fake data
-    implementation 'net.datafaker:datafaker:2.2.2'
+    implementation 'net.datafaker:datafaker:2.4.4'
 
     // For testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
