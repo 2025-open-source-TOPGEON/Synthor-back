@@ -194,10 +194,18 @@ public class DataGenerationService {
     private Object generateValueByType(FieldRequest field) {
         String type = field.getType();
         Map<String, Object> constraints = field.getConstraints();
+        Map<String, Object> parsedConstraints = field.getParsedConstraints();
 
         return switch (type) {
             // --- [KOREAN] Person & Personal Info ---
-            case "korean_full_name" -> koreanFaker.name().lastName() + koreanFaker.name().firstName();
+            case "korean_full_name" -> {
+                String lastName = (String) parsedConstraints.getOrDefault("lastName", constraints.get("lastName"));
+                if (lastName != null) {
+                    yield lastName + koreanFaker.name().firstName();
+                } else {
+                    yield koreanFaker.name().lastName() + koreanFaker.name().firstName();
+                }
+            }
             case "korean_first_name" -> koreanFaker.name().firstName();
             case "korean_last_name" -> koreanFaker.name().lastName();
             case "korean_gender" -> KOREAN_GENDERS[defaultFaker.random().nextInt(KOREAN_GENDERS.length)];
@@ -298,17 +306,15 @@ public class DataGenerationService {
             // --- Internet & Tech ---
             case "username" -> defaultFaker.name().username();
             case "password" -> {
-                Integer minLength = (Integer) constraints.get("minimum_length");
-                Integer upper = (Integer) constraints.get("upper");
-                Integer lower = (Integer) constraints.get("lower");
-                Integer numbers = (Integer) constraints.get("numbers");
-                Integer symbols = (Integer) constraints.get("symbols");
+                // Determine parameters with priority: parsed -> manual -> default
+                Integer minLength = (Integer) parsedConstraints.getOrDefault("minimum_length", constraints.getOrDefault("minimum_length", 8));
+                Integer upper = (Integer) parsedConstraints.getOrDefault("upper", constraints.getOrDefault("upper", 1));
+                Integer lower = (Integer) parsedConstraints.getOrDefault("lower", constraints.getOrDefault("lower", 1));
+                Integer numbers = (Integer) parsedConstraints.getOrDefault("numbers", constraints.getOrDefault("numbers", 1));
+                Integer symbols = (Integer) parsedConstraints.getOrDefault("symbols", constraints.getOrDefault("symbols", 1));
+
                 int min = (minLength != null) ? minLength : 8;
                 int max = min + 5; // Set a reasonable max length
-
-                // For generation, create a regex that allows all character types and specifies a length range.
-                String allCharsRegex = "[a-zA-Z0-9!@#$%&*]{" + min + "," + max + "}";
-                String specialCharsValidationRegex = ".*[!@#$%&*].*";
 
                 boolean requireUppercase = (upper != null && upper > 0);
                 boolean requireLowercase = (lower != null && lower > 0);
@@ -318,18 +324,23 @@ public class DataGenerationService {
                 String password;
                 boolean isPasswordValid;
                 do {
-                    // Step 1: Generate a random string from the full character set.
-                    password = defaultFaker.regexify(allCharsRegex);
+                    // Generate a base password with the correct length and basic character types
+                    password = defaultFaker.internet().password(min, max, true, true, true);
+                    if(requireSpecial) {
+                        password += defaultFaker.lorem().character(); // Add a special character if required
+                    }
 
-                    // Step 2: Validate if it meets the minimum requirements.
-                    boolean hasUppercase = !requireUppercase || password.matches(".*[A-Z].*");
-                    boolean hasLowercase = !requireLowercase || password.matches(".*[a-z].*");
-                    boolean hasDigits = !requireDigits || password.matches(".*[0-9].*");
-                    boolean hasSpecial = !requireSpecial || password.matches(specialCharsValidationRegex);
+                    long upperCount = password.chars().filter(Character::isUpperCase).count();
+                    long lowerCount = password.chars().filter(Character::isLowerCase).count();
+                    long digitCount = password.chars().filter(Character::isDigit).count();
+                    long specialCount = password.chars().filter(c -> !Character.isLetterOrDigit(c)).count();
 
-                    isPasswordValid = !password.isEmpty() && hasUppercase && hasLowercase && hasDigits && hasSpecial;
+                    isPasswordValid = (!requireUppercase || upperCount >= upper) &&
+                                      (!requireLowercase || lowerCount >= lower) &&
+                                      (!requireDigits || digitCount >= numbers) &&
+                                      (!requireSpecial || specialCount >= symbols);
 
-                } while (!isPasswordValid); // Step 3: Repeat if not valid.
+                } while (!isPasswordValid);
                 yield password;
             }
             case "email_address" -> generateCustomEmail();
