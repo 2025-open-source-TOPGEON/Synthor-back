@@ -48,7 +48,7 @@ public class DataGenerationController {
                                               "fields": [
                                                 {
                                                   "name": "userPassword",
-                                                  "prompt": "",
+                                                  "prompt": "타입을 full name 으로 바꿔줘",
                                                   "type": "password",
                                                   "constraints": {
                                                     "minimum_length": 12,
@@ -65,6 +65,13 @@ public class DataGenerationController {
                                                   "type": "email_address",
                                                   "constraints": {},
                                                   "nullablePercent": 0
+                                                },
+                                                {
+                                                  "name": "real_userEmail",
+                                                  "prompt": "",
+                                                  "type": "email_address",
+                                                  "constraints": {},
+                                                  "nullablePercent": 50
                                                 },
                                                 {
                                                   "name": "userCountry",
