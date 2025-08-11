@@ -24,6 +24,7 @@ repositories {
 dependencies {
     // Spring Web: For building REST APIs
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // AI API 호출을 위한 의존성
 
     // Lombok: To reduce boilerplate code (like getters, setters, constructors)
     compileOnly 'org.projectlombok:lombok'

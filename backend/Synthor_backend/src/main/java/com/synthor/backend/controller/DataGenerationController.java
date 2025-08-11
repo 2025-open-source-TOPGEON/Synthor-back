@@ -48,6 +48,7 @@ public class DataGenerationController {
                                               "fields": [
                                                 {
                                                   "name": "userPassword",
+                                                  "prompt": "타입을 full name 으로 바꿔줘",
                                                   "type": "password",
                                                   "constraints": {
                                                     "minimum_length": 12,
@@ -60,9 +61,31 @@ public class DataGenerationController {
                                                 },
                                                 {
                                                   "name": "userEmail",
+                                                  "prompt": "비밀번호는 최소 10자 이상이고 숫자와 특수문자가 포함되어야 해",
                                                   "type": "email_address",
                                                   "constraints": {},
                                                   "nullablePercent": 0
+                                                },
+                                                {
+                                                  "name": "real_userEmail",
+                                                  "prompt": "",
+                                                  "type": "email_address",
+                                                  "constraints": {},
+                                                  "nullablePercent": 50
+                                                },
+                                                {
+                                                  "name": "userCountry",
+                                                  "type": "country",
+                                                  "prompt": "이건 ai 가 절대 해석 못할거임.(오픈소스 우승은 synthor)",
+                                                  "constraints": {
+                                                    "options": [
+                                                      "South Korea",
+                                                      "USA",
+                                                      "Japan",
+                                                      "China"
+                                                    ]
+                                                  },
+                                                  "nullablePercent": 30
                                                 }
                                               ]
                                             }
