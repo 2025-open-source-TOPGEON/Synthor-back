@@ -60,9 +60,19 @@ public class DataGenerationController {
                                                 },
                                                 {
                                                   "name": "userEmail",
+                                                  "prompt": "비밀번호는 최소 10자 이상이고 숫자와 특수문자가 포함되어야 해",
                                                   "type": "email_address",
                                                   "constraints": {},
                                                   "nullablePercent": 0
+                                                },
+                                                {
+                                                  "name": "userCountry",
+                                                  "type": "country",
+                                                  "prompt": "아시아 국가 중에서 골라줘",
+                                                  "constraints": {
+                                                    "options": ["South Korea", "USA", "Japan", "China"]
+                                                  },
+                                                  "nullablePercent": 30
                                                 }
                                               ]
                                             }
