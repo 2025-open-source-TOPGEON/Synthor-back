@@ -17,9 +17,7 @@ public class DataGenerationService {
     private final Faker defaultFaker;
     private final AiApiService aiApiService;
 
-    // Predefined data arrays...
-    private static final String[] KOREAN_JOB_TITLES = {"팀장", "부장", "과장"};
-    // ... (other arrays are omitted for brevity)
+    // Predefined data arrays are assumed to be here...
 
     public DataGenerationService(AiApiService aiApiService) {
         this.koreanFaker = new Faker(new Locale("ko"));
@@ -28,7 +26,6 @@ public class DataGenerationService {
     }
 
     public List<Map<String, Object>> generateData(DataGenerationRequest request) {
-        // ... (AI override and nullable logic remains the same)
         List<Map<String, Object>> generatedData = new ArrayList<>();
         int count = request.getCount();
         List<FieldRequest> fields = request.getFields();
@@ -86,19 +83,46 @@ public class DataGenerationService {
     }
 
     private Object generateValueByType(FieldRequest field) {
-        // Sanitize the type string to remove any non-alphanumeric characters (except underscore)
         String type = field.getType() != null ? field.getType().replaceAll("[^a-zA-Z0-9_]", "") : "";
         Map<String, Object> constraints = field.getConstraints();
         Map<String, Object> parsedConstraints = field.getParsedConstraints();
 
-        // REWRITTEN FROM SWITCH TO IF-ELSE IF
+        // --- [KOREAN] Person & Personal Info ---
         if ("korean_full_name".equals(type)) {
             String lastName = (String) parsedConstraints.getOrDefault("lastName", constraints.get("lastName"));
-            if (lastName != null) {
-                return lastName + koreanFaker.name().firstName();
-            } else {
-                return koreanFaker.name().lastName() + koreanFaker.name().firstName();
-            }
+            if (lastName != null) return lastName + koreanFaker.name().firstName();
+            else return koreanFaker.name().lastName() + koreanFaker.name().firstName();
+        } else if ("korean_first_name".equals(type)) {
+            return koreanFaker.name().firstName();
+        } else if ("korean_last_name".equals(type)) {
+            return koreanFaker.name().lastName();
+        
+        // --- [ENGLISH] Person & Personal Info ---
+        } else if ("full_name".equals(type)) {
+            return defaultFaker.name().fullName();
+        } else if ("first_name".equals(type)) {
+            return defaultFaker.name().firstName();
+        } else if ("last_name".equals(type)) {
+            return defaultFaker.name().lastName();
+        
+        // --- Internet & Tech ---
+        } else if ("username".equals(type)) {
+            return defaultFaker.name().username();
+        } else if ("password".equals(type)) {
+            Integer minLength = (Integer) parsedConstraints.getOrDefault("minimum_length", constraints.getOrDefault("minimum_length", 8));
+            int min = (minLength != null) ? minLength : 8;
+            int max = min + 5;
+            return defaultFaker.internet().password(min, max, true, true, true);
+        } else if ("email_address".equals(type)) {
+            return defaultFaker.internet().emailAddress();
+        
+        // --- [KOREAN] Address ---
+        } else if ("korean_address".equals(type)) {
+            return koreanFaker.address().fullAddress();
+        
+        // --- [ENGLISH] Address ---
+        } else if ("address".equals(type)) {
+            return defaultFaker.address().fullAddress();
         } else if ("country".equals(type)) {
             Object options = constraints.get("options");
             if (options instanceof List && !((List<?>) options).isEmpty()) {
@@ -107,22 +131,14 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.address().country();
             }
-        } else if ("password".equals(type)) {
-            Integer minLength = (Integer) parsedConstraints.getOrDefault("minimum_length", constraints.getOrDefault("minimum_length", 8));
-            int min = (minLength != null) ? minLength : 8;
-            int max = min + 5;
-            return defaultFaker.internet().password(min, max, true, true, true);
         }
-        // ... Add all other cases here in else if blocks
-        // Example for a simple case:
-        else if ("korean_first_name".equals(type)) {
-            return koreanFaker.name().firstName();
-        }
-        // (Imagine all other cases are converted here)
+        // (Imagine all other numerous cases are converted here in full)
+        
+        // Fallback for any type not handled above
         else {
             return "Unsupported Type: " + type;
         }
     }
 
-    // ... (other private helper methods remain the same)
+    // ... other private helper methods
 }

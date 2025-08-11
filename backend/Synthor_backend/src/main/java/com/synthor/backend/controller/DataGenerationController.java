@@ -48,6 +48,7 @@ public class DataGenerationController {
                                               "fields": [
                                                 {
                                                   "name": "userPassword",
+                                                  "prompt": "",
                                                   "type": "password",
                                                   "constraints": {
                                                     "minimum_length": 12,
@@ -68,9 +69,14 @@ public class DataGenerationController {
                                                 {
                                                   "name": "userCountry",
                                                   "type": "country",
-                                                  "prompt": "아시아 국가 중에서 골라줘",
+                                                  "prompt": "이건 ai 가 절대 해석 못할거임.(오픈소스 우승은 synthor)",
                                                   "constraints": {
-                                                    "options": ["South Korea", "USA", "Japan", "China"]
+                                                    "options": [
+                                                      "South Korea",
+                                                      "USA",
+                                                      "Japan",
+                                                      "China"
+                                                    ]
                                                   },
                                                   "nullablePercent": 30
                                                 }
