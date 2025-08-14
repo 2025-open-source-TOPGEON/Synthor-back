@@ -39,7 +39,7 @@ public class DataGenerationService {
                     field.setType(aiType);
                     Map<String, Object> aiConstraints = aiResponse.getConstraints();
                     if (aiConstraints != null && !aiConstraints.isEmpty()) {
-                        field.setConstraints(aiConstraints);
+                        field.setParsedConstraints(aiConstraints);
                     }
                     if (aiResponse.getNullablePercent() != null) {
                         field.setNullablePercent(aiResponse.getNullablePercent());
@@ -114,7 +114,12 @@ public class DataGenerationService {
             int max = min + 5;
             return defaultFaker.internet().password(min, max, true, true, true);
         } else if ("email_address".equals(type)) {
-            return defaultFaker.internet().emailAddress();
+            String domain = (String) parsedConstraints.getOrDefault("domain", constraints.get("domain"));
+            if (domain != null) {
+                return defaultFaker.name().username() + "@" + domain;
+            } else {
+                return defaultFaker.internet().emailAddress();
+            }
         
         // --- [KOREAN] Address ---
         } else if ("korean_address".equals(type)) {
@@ -171,6 +176,25 @@ public class DataGenerationService {
             } catch (ParseException e) {
                 return "Invalid date format in 'from'/'to' constraints. Please use 'yyyy-MM-dd'.";
             }
+        } else if ("phone_number".equals(type)) {
+            // Allowed formats
+            Set<String> allowedFormats = new HashSet<>(Arrays.asList(
+                "###-###-####", "(###) ###-####", "### ### ####", "+# ### ### ####",
+                "+# (###) ###-####", "+#-###-###-####", "#-(###) ###-####", "##########"
+            ));
+
+            String format = (String) constraints.get("format");
+
+            // If format is provided, it must be one of the allowed ones.
+            if (format != null && !allowedFormats.contains(format)) {
+                return "Invalid format provided for phone_number. Supported formats are: " + allowedFormats;
+            }
+            // If format is null, use a default.
+            if (format == null) {
+                format = "###-###-####";
+            }
+
+            return defaultFaker.numerify(format);
         }
         // (Imagine all other numerous cases are converted here in full)
         
