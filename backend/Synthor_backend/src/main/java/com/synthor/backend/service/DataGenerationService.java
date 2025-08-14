@@ -277,6 +277,8 @@ public class DataGenerationService {
             }
         } else if ("address_line_2".equals(type)) {
             return ADDRESS_LINE_2_EXAMPLES[defaultFaker.random().nextInt(ADDRESS_LINE_2_EXAMPLES.length)];
+        } else if ("street_address".equals(type)) {
+            return defaultFaker.address().streetAddress();
         } else if ("number".equals(type)) {
             int min = (Integer) constraints.getOrDefault("min", 0);
             int max = (Integer) constraints.getOrDefault("max", 100);
