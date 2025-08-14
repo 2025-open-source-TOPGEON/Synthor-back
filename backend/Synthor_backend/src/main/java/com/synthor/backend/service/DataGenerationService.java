@@ -303,6 +303,28 @@ public class DataGenerationService {
             }
 
             return sb.toString();
+        } else if ("user_agent".equals(type)) {
+            return defaultFaker.internet().userAgent();
+        } else if ("ip_v4_address".equals(type)) {
+            return defaultFaker.internet().ipV4Address();
+        } else if ("ip_v6_address".equals(type)) {
+            return defaultFaker.internet().ipV6Address();
+        } else if ("mac_address".equals(type)) {
+            return defaultFaker.internet().macAddress();
+
+// --- App & Device ---
+        } else if ("app_name".equals(type)) {
+            return defaultFaker.app().name();
+        } else if ("app_version".equals(type)) {
+            return defaultFaker.app().version();
+        } else if ("app_bundle_id".equals(type)) {
+            return APP_BUNDLE_ID_EXAMPLES[defaultFaker.random().nextInt(APP_BUNDLE_ID_EXAMPLES.length)];
+        } else if ("device_model".equals(type)) {
+            return defaultFaker.device().modelName();
+        } else if ("device_brand".equals(type)) {
+            return defaultFaker.device().manufacturer();
+        } else if ("device_os".equals(type)) {
+            return defaultFaker.device().platform();
 
 // --- [KOREAN] Address ---
         } else if ("korean_address".equals(type)) {
@@ -357,6 +379,12 @@ public class DataGenerationService {
             return KOREAN_DEPARTMENTS_CORPORATE[defaultFaker.random().nextInt(KOREAN_DEPARTMENTS_CORPORATE.length)];
         } else if ("korean_department_retail".equals(type)) {
             return KOREAN_DEPARTMENTS_RETAIL[defaultFaker.random().nextInt(KOREAN_DEPARTMENTS_RETAIL.length)];
+        } else if ("korean_product_name".equals(type)) {
+            return KOREAN_PRODUCT_NAMES[defaultFaker.random().nextInt(KOREAN_PRODUCT_NAMES.length)];
+        } else if ("korean_product_category".equals(type)) {
+            return KOREAN_PRODUCT_CATEGORIES[defaultFaker.random().nextInt(KOREAN_PRODUCT_CATEGORIES.length)];
+        } else if ("korean_product_description".equals(type)) {
+            return String.join(" ", koreanFaker.lorem().sentences(2));
 
 // --- [ENGLISH] Company & Commerce ---
         } else if ("company_name".equals(type)) {
@@ -367,6 +395,26 @@ public class DataGenerationService {
             return defaultFaker.company().profession();
         } else if ("department_retail".equals(type)) {
             return defaultFaker.commerce().department();
+        } else if ("product_name".equals(type)) {
+            return defaultFaker.commerce().productName();
+        } else if ("product_category".equals(type)) {
+            return defaultFaker.commerce().department();
+        } else if ("product_description".equals(type)) {
+            return String.join(" ", defaultFaker.lorem().sentences(2));
+        } else if ("product_price".equals(type)) {
+            return defaultFaker.commerce().price();
+
+// --- Finance ---
+        } else if ("credit_card_number".equals(type)) {
+            return defaultFaker.finance().creditCard().replace("-", "");
+        } else if ("credit_card_type".equals(type)) {
+            Object options = constraints.get("options");
+            if (options instanceof List && !((List<?>) options).isEmpty()) {
+                List<?> optionsList = (List<?>) options;
+                return optionsList.get(defaultFaker.random().nextInt(optionsList.size())).toString();
+            } else {
+                return defaultFaker.business().creditCardType();
+            }
         } else if ("number".equals(type)) {
             int min = (Integer) constraints.getOrDefault("min", 0);
             int max = (Integer) constraints.getOrDefault("max", 100);
