@@ -4,6 +4,7 @@ import com.synthor.backend.dto.AiApiResponse;
 import com.synthor.backend.dto.DataGenerationRequest;
 import com.synthor.backend.dto.FieldRequest;
 import net.datafaker.Faker;
+import net.datafaker.service.CreditCardType;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
