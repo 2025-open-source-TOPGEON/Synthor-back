@@ -2,6 +2,7 @@ package com.synthor.backend.service;
 
 import com.synthor.backend.dto.AiApiResponse;
 import com.synthor.backend.dto.DataGenerationRequest;
+import com.synthor.backend.dto.DataGenerationResponse;
 import com.synthor.backend.dto.FieldRequest;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
@@ -145,15 +146,13 @@ public class DataGenerationService {
             "BANCA NAZIONALE DEL LAVORO S.P.A. (IN FORMA CONTRATTA BNL S.P.A.)", "AS SEB Pank", "KEY BANK", "SECURITY BANK"
     };
 
-    // Predefined data arrays are assumed to be here...
-
     public DataGenerationService(AiApiService aiApiService) {
         this.koreanFaker = new Faker(new Locale("ko"));
         this.defaultFaker = new Faker(Locale.ENGLISH);
         this.aiApiService = aiApiService;
     }
 
-    public List<Map<String, Object>> generateData(DataGenerationRequest request) {
+    public DataGenerationResponse generateData(DataGenerationRequest request) {
         List<Map<String, Object>> generatedData = new ArrayList<>();
         int count = request.getCount();
         List<FieldRequest> fields = request.getFields();
@@ -213,7 +212,7 @@ public class DataGenerationService {
             }
             generatedData.add(row);
         }
-        return generatedData;
+        return new DataGenerationResponse(fields, generatedData);
     }
 
     private Object generateValueByType(FieldRequest field) {
@@ -517,7 +516,7 @@ public class DataGenerationService {
 // Allowed formats
             Set<String> allowedFormats = new HashSet<>(Arrays.asList(
                     "###-###-####", "(###) ###-####", "### ### ####", "+# ### ### ####",
-                    "+# (###) ###-####", "+#-###-###-####", "#-(###) ###-####", "##########"
+                    "+# (###) ###-####", "+-###-###-####", "#-(###) ###-####", "##########"
             ));
 
             String format = (String) constraints.get("format");

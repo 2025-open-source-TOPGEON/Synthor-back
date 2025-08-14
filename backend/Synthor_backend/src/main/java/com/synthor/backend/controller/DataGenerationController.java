@@ -2,6 +2,7 @@ package com.synthor.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.synthor.backend.dto.DataGenerationRequest;
+import com.synthor.backend.dto.DataGenerationResponse;
 import com.synthor.backend.service.DataGenerationService;
 import com.synthor.backend.service.DataFormattingService;
 import com.synthor.backend.service.NlpService;
@@ -33,7 +34,7 @@ public class DataGenerationController {
 
     @Operation(
             summary = "수동 데이터 생성",
-            description = "지정된 필드 타입과 개수에 따라 가짜 데이터를 생성하고, 요청된 포맷으로 반환합니다.",
+            description = "지정된 필드 타입과 개수에 따라 가짜 데이터를 생성하고, 적용된 필드 정보와 함께 반환합니다.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "데이터 생성 요청 명세",
                     required = true,
@@ -95,39 +96,28 @@ public class DataGenerationController {
             )
     )
     @PostMapping("/manual-generate")
-    public ResponseEntity<String> manualGenerateData(
-            @RequestBody DataGenerationRequest request,
-            @Parameter(description = "반환받을 데이터 포맷 (json, csv, html, sql, xml, ldif)", example = "json")
-            @RequestParam(defaultValue = "json") String format) throws JsonProcessingException {
+    public ResponseEntity<DataGenerationResponse> manualGenerateData(
+            @RequestBody DataGenerationRequest request) {
 
-        // 1. Generate the core data
-        List<Map<String, Object>> generatedData = dataGenerationService.generateData(request);
+        // 1. Generate the data and get the comprehensive response object
+        DataGenerationResponse response = dataGenerationService.generateData(request);
 
-        // 2. Format the data into the requested format
-        String formattedData = dataFormattingService.format(generatedData, format);
-
-        // 3. Return the response with the appropriate content type
-        MediaType contentType = getContentTypeForFormat(format);
-        return ResponseEntity.ok().contentType(contentType).body(formattedData);
+        // 2. Return the response object directly
+        // The object will be automatically serialized to JSON
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/ai-generate")
-    public ResponseEntity<String> aiGenerateData(
-            @RequestBody String query,
-            @Parameter(description = "반환받을 데이터 포맷 (json, csv, html, sql, xml, ldif)", example = "json")
-            @RequestParam(defaultValue = "json") String format) throws JsonProcessingException {
+    public ResponseEntity<DataGenerationResponse> aiGenerateData(
+            @RequestBody String query) {
         // 1. Parse the natural language query using the NLP service
         DataGenerationRequest request = nlpService.parseQuery(query);
 
         // 2. Generate data using the existing data generation service
-        List<Map<String, Object>> generatedData = dataGenerationService.generateData(request);
+        DataGenerationResponse response = dataGenerationService.generateData(request);
 
-        // 3. Format the data into the requested format
-        String formattedData = dataFormattingService.format(generatedData, format);
-
-        // 4. Return the response with the appropriate content type
-        MediaType contentType = getContentTypeForFormat(format);
-        return ResponseEntity.ok().contentType(contentType).body(formattedData);
+        // 3. Return the response object directly
+        return ResponseEntity.ok(response);
     }
 
     /**
