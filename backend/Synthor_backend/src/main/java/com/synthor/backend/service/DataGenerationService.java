@@ -385,6 +385,8 @@ public class DataGenerationService {
             return KOREAN_PRODUCT_CATEGORIES[defaultFaker.random().nextInt(KOREAN_PRODUCT_CATEGORIES.length)];
         } else if ("korean_product_description".equals(type)) {
             return String.join(" ", koreanFaker.lorem().sentences(2));
+        } else if ("korean_catch_phrase".equals(type)) {
+            return KOREAN_CATCH_PHRASES[defaultFaker.random().nextInt(KOREAN_CATCH_PHRASES.length)];
 
 // --- [ENGLISH] Company & Commerce ---
         } else if ("company_name".equals(type)) {
@@ -401,6 +403,8 @@ public class DataGenerationService {
             return defaultFaker.commerce().department();
         } else if ("product_description".equals(type)) {
             return String.join(" ", defaultFaker.lorem().sentences(2));
+        } else if ("catch_phrase".equals(type)) {
+            return defaultFaker.company().catchPhrase();
         } else if ("product_price".equals(type)) {
             return defaultFaker.commerce().price();
 
@@ -415,6 +419,16 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.business().creditCardType();
             }
+        } else if ("bank_name".equals(type)) {
+            return BANK_NAME_EXAMPLES[defaultFaker.random().nextInt(BANK_NAME_EXAMPLES.length)];
+        } else if ("bank_routing_number".equals(type)) {
+            return generateBankRoutingNumber();
+        } else if ("iban".equals(type)) {
+            return defaultFaker.finance().iban();
+        } else if ("swift_bic".equals(type)) {
+            return defaultFaker.finance().bic();
+        } else if ("currency".equals(type)) {
+            return defaultFaker.currency().name();
         } else if ("number".equals(type)) {
             int min = (Integer) constraints.getOrDefault("min", 0);
             int max = (Integer) constraints.getOrDefault("max", 100);
@@ -530,11 +544,25 @@ public class DataGenerationService {
                 return baseUrl;
             }
         }
+// --- Misc ---
+        else if ("korean_color".equals(type)) {
+            return koreanFaker.color().name();
+        } else if ("language".equals(type)) {
+            return defaultFaker.nation().language();
+        } else if ("color".equals(type)) {
+            return defaultFaker.color().name();
+        }
 // (Imagine all other numerous cases are converted here in full)
 
 // Fallback for any type not handled above
         else {
             return "Unsupported Type: " + type;
         }
+    }
+
+    private String generateBankRoutingNumber() {
+        int firstDigit = defaultFaker.random().nextInt(4); // 0, 1, 2, 3
+        String remainingDigits = defaultFaker.number().digits(8);
+        return firstDigit + remainingDigits;
     }
 }
