@@ -267,6 +267,8 @@ public class DataGenerationService {
             return koreanFaker.address().city();
         } else if ("korean_state".equals(type)) {
             return koreanFaker.address().state();
+        } else if ("korean_postal_code".equals(type)) {
+            return koreanFaker.address().zipCode();
 
 // --- [ENGLISH] Address ---
         } else if ("address".equals(type)) {
@@ -293,6 +295,12 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.address().state();
             }
+        } else if ("postal_code".equals(type)) {
+            return defaultFaker.address().zipCode();
+        } else if ("latitude".equals(type)) {
+            return defaultFaker.address().latitude();
+        } else if ("longitude".equals(type)) {
+            return defaultFaker.address().longitude();
         } else if ("number".equals(type)) {
             int min = (Integer) constraints.getOrDefault("min", 0);
             int max = (Integer) constraints.getOrDefault("max", 100);
