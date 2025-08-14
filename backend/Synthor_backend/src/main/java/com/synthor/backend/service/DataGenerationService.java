@@ -551,6 +551,29 @@ public class DataGenerationService {
             return defaultFaker.nation().language();
         } else if ("color".equals(type)) {
             return defaultFaker.color().name();
+        } else if ("paragraphs".equals(type)) {
+            Object atLeastObj = constraints.get("at least");
+            Object noMoreThanObj = constraints.get("but no more than");
+
+            int minParagraphs = 3; // Default min
+            if (atLeastObj instanceof Integer) {
+                minParagraphs = (Integer) atLeastObj;
+            }
+
+            int maxParagraphs = 6; // Default max
+            if (noMoreThanObj instanceof Integer) {
+                maxParagraphs = (Integer) noMoreThanObj;
+            }
+
+            if (minParagraphs > maxParagraphs) {
+                int temp = minParagraphs;
+                minParagraphs = maxParagraphs;
+                maxParagraphs = temp;
+            }
+
+            int numParagraphs = defaultFaker.number().numberBetween(minParagraphs, maxParagraphs);
+            List<String> paragraphList = defaultFaker.lorem().paragraphs(numParagraphs);
+            return String.join("\n\n", paragraphList);
         }
 // (Imagine all other numerous cases are converted here in full)
 
