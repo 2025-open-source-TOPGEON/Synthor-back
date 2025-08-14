@@ -4,7 +4,6 @@ import com.synthor.backend.dto.AiApiResponse;
 import com.synthor.backend.dto.DataGenerationRequest;
 import com.synthor.backend.dto.FieldRequest;
 import net.datafaker.Faker;
-import net.datafaker.service.CreditCardType;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -146,7 +145,7 @@ public class DataGenerationService {
             "BANCA NAZIONALE DEL LAVORO S.P.A. (IN FORMA CONTRATTA BNL S.P.A.)", "AS SEB Pank", "KEY BANK", "SECURITY BANK"
     };
 
-    // Predefined data arrays are assumed to be here...
+// Predefined data arrays are assumed to be here...
 
     public DataGenerationService(AiApiService aiApiService) {
         this.koreanFaker = new Faker(new Locale("ko"));
@@ -217,7 +216,7 @@ public class DataGenerationService {
         Map<String, Object> constraints = field.getConstraints();
         Map<String, Object> parsedConstraints = field.getParsedConstraints();
 
-        // --- [KOREAN] Person & Personal Info ---
+// --- [KOREAN] Person & Personal Info ---
         if ("korean_full_name".equals(type)) {
             String lastName = (String) parsedConstraints.getOrDefault("lastName", constraints.get("lastName"));
             if (lastName != null) return lastName + koreanFaker.name().firstName();
@@ -230,8 +229,8 @@ public class DataGenerationService {
             return KOREAN_GENDERS[defaultFaker.random().nextInt(KOREAN_GENDERS.length)];
         } else if ("korean_gender_with_non_binary".equals(type)) {
             return KOREAN_GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(KOREAN_GENDERS_WITH_NON_BINARY.length)];
-        
-        // --- [ENGLISH] Person & Personal Info ---
+
+// --- [ENGLISH] Person & Personal Info ---
         } else if ("full_name".equals(type)) {
             return defaultFaker.name().fullName();
         } else if ("first_name".equals(type)) {
@@ -242,8 +241,8 @@ public class DataGenerationService {
             return GENDERS[defaultFaker.random().nextInt(GENDERS.length)];
         } else if ("gender_with_non_binary".equals(type)) {
             return GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(GENDERS_WITH_NON_BINARY.length)];
-        
-        // --- Internet & Tech ---
+
+// --- Internet & Tech ---
         } else if ("username".equals(type)) {
             return defaultFaker.name().username();
         } else if ("password".equals(type)) {
@@ -258,12 +257,14 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.internet().emailAddress();
             }
-        
-        // --- [KOREAN] Address ---
+
+// --- [KOREAN] Address ---
         } else if ("korean_address".equals(type)) {
             return koreanFaker.address().fullAddress();
-        
-        // --- [ENGLISH] Address ---
+        } else if ("korean_address_line_2".equals(type)) {
+            return KOREAN_ADDRESS_LINE_2_EXAMPLES[defaultFaker.random().nextInt(KOREAN_ADDRESS_LINE_2_EXAMPLES.length)];
+
+// --- [ENGLISH] Address ---
         } else if ("address".equals(type)) {
             return defaultFaker.address().fullAddress();
         } else if ("country".equals(type)) {
@@ -274,6 +275,8 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.address().country();
             }
+        } else if ("address_line_2".equals(type)) {
+            return ADDRESS_LINE_2_EXAMPLES[defaultFaker.random().nextInt(ADDRESS_LINE_2_EXAMPLES.length)];
         } else if ("number".equals(type)) {
             int min = (Integer) constraints.getOrDefault("min", 0);
             int max = (Integer) constraints.getOrDefault("max", 100);
@@ -286,7 +289,7 @@ public class DataGenerationService {
             }
         } else if ("datetime".equals(type)) {
             Set<String> allowedFormats = new HashSet<>(Arrays.asList(
-                "M/d/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "yyyy-MM", "d/M/yyyy", "dd/MM/yyyy"
+                    "M/d/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "yyyy-MM", "d/M/yyyy", "dd/MM/yyyy"
             ));
             String fromStr = (String) constraints.get("from");
             String toStr = (String) constraints.get("to");
@@ -315,19 +318,19 @@ public class DataGenerationService {
                 return "Invalid date format in 'from'/'to' constraints. Please use 'yyyy-MM-dd'.";
             }
         } else if ("phone_number".equals(type)) {
-            // Allowed formats
+// Allowed formats
             Set<String> allowedFormats = new HashSet<>(Arrays.asList(
-                "###-###-####", "(###) ###-####", "### ### ####", "+# ### ### ####",
-                "+# (###) ###-####", "+#-###-###-####", "#-(###) ###-####", "##########"
+                    "###-###-####", "(###) ###-####", "### ### ####", "+# ### ### ####",
+                    "+# (###) ###-####", "+#-###-###-####", "#-(###) ###-####", "##########"
             ));
 
             String format = (String) constraints.get("format");
 
-            // If format is provided, it must be one of the allowed ones.
+// If format is provided, it must be one of the allowed ones.
             if (format != null && !allowedFormats.contains(format)) {
                 return "Invalid format provided for phone_number. Supported formats are: " + allowedFormats;
             }
-            // If format is null, use a default.
+// If format is null, use a default.
             if (format == null) {
                 format = "###-###-####";
             }
@@ -336,29 +339,27 @@ public class DataGenerationService {
         } else if ("avatar".equals(type)) {
             String baseUrl = defaultFaker.avatar().image(); // Generates a .png URL by default
 
-            // Get constraints from the map
+// Get constraints from the map
             String imageFormat = (String) constraints.get("image_format");
             String size = (String) constraints.get("size");
 
-            // Handle image format
+// Handle image format
             if (imageFormat != null && (imageFormat.equals("jpg") || imageFormat.equals("bmp"))) {
                 baseUrl = baseUrl.replace(".png", "." + imageFormat);
             }
 
-            // Handle size
+// Handle size
             if (size != null && !size.isEmpty() && size.matches("\\d+x\\d+")) {
                 return baseUrl + "?size=" + size;
             } else {
                 return baseUrl;
             }
         }
-        // (Imagine all other numerous cases are converted here in full)
-        
-        // Fallback for any type not handled above
+// (Imagine all other numerous cases are converted here in full)
+
+// Fallback for any type not handled above
         else {
             return "Unsupported Type: " + type;
         }
     }
-
-    // ... other private helper methods
 }
