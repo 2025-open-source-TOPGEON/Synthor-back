@@ -257,6 +257,52 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.internet().emailAddress();
             }
+        } else if ("domain_name".equals(type)) {
+            return defaultFaker.internet().domainName();
+        } else if ("url".equals(type)) {
+            if (constraints.isEmpty()) {
+                return defaultFaker.internet().url();
+            }
+
+            Object protocolObj = constraints.get("protocol");
+            boolean includeProtocol = protocolObj instanceof Boolean && (Boolean) protocolObj;
+
+            Object hostObj = constraints.get("host");
+            boolean includeHost = hostObj == null || (hostObj instanceof Boolean && (Boolean) hostObj);
+
+            Object pathObj = constraints.get("path");
+            boolean includePath = pathObj instanceof Boolean && (Boolean) pathObj;
+
+            Object queryObj = constraints.get("query_string");
+            boolean includeQuery = queryObj instanceof Boolean && (Boolean) queryObj;
+
+            StringBuilder sb = new StringBuilder();
+
+            if (includeProtocol) {
+                sb.append(defaultFaker.options().option("http", "https")).append("://");
+            }
+
+            if (includeHost) {
+                sb.append(defaultFaker.internet().domainName());
+            }
+
+            if (includePath) {
+                sb.append("/").append(defaultFaker.lorem().word().toLowerCase());
+                if (defaultFaker.random().nextBoolean()) {
+                    sb.append("/").append(defaultFaker.lorem().word().toLowerCase());
+                }
+            }
+
+            if (includeQuery) {
+                sb.append("?").append(defaultFaker.lorem().word().toLowerCase())
+                  .append("=").append(defaultFaker.lorem().word().toLowerCase());
+                if (defaultFaker.random().nextBoolean()) {
+                    sb.append("&").append(defaultFaker.lorem().word().toLowerCase())
+                      .append("=").append(defaultFaker.lorem().word().toLowerCase());
+                }
+            }
+
+            return sb.toString();
 
 // --- [KOREAN] Address ---
         } else if ("korean_address".equals(type)) {
@@ -301,6 +347,26 @@ public class DataGenerationService {
             return defaultFaker.address().latitude();
         } else if ("longitude".equals(type)) {
             return defaultFaker.address().longitude();
+
+// --- [KOREAN] Company & Commerce ---
+        } else if ("korean_company_name".equals(type)) {
+            return koreanFaker.company().name();
+        } else if ("korean_job_title".equals(type)) {
+            return KOREAN_JOB_TITLES[defaultFaker.random().nextInt(KOREAN_JOB_TITLES.length)];
+        } else if ("korean_department_corporate".equals(type)) {
+            return KOREAN_DEPARTMENTS_CORPORATE[defaultFaker.random().nextInt(KOREAN_DEPARTMENTS_CORPORATE.length)];
+        } else if ("korean_department_retail".equals(type)) {
+            return KOREAN_DEPARTMENTS_RETAIL[defaultFaker.random().nextInt(KOREAN_DEPARTMENTS_RETAIL.length)];
+
+// --- [ENGLISH] Company & Commerce ---
+        } else if ("company_name".equals(type)) {
+            return defaultFaker.company().name();
+        } else if ("job_title".equals(type)) {
+            return defaultFaker.job().title();
+        } else if ("department_corporate".equals(type)) {
+            return defaultFaker.company().profession();
+        } else if ("department_retail".equals(type)) {
+            return defaultFaker.commerce().department();
         } else if ("number".equals(type)) {
             int min = (Integer) constraints.getOrDefault("min", 0);
             int max = (Integer) constraints.getOrDefault("max", 100);
