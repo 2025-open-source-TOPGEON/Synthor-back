@@ -211,7 +211,7 @@ public class DataGenerationService {
     }
 
     private Object generateValueByType(FieldRequest field) {
-        String type = field.getType() != null ? field.getType().replaceAll("[^a-zA-Z0-9_]", "").toLowerCase() : "";
+        String type = field.getType() != null ? field.getType().trim().toLowerCase() : "";
         System.out.println(">>> [DEBUG] Processing type: " + type); // Debugging line
         Map<String, Object> constraints = field.getConstraints();
         Map<String, Object> parsedConstraints = field.getParsedConstraints();
