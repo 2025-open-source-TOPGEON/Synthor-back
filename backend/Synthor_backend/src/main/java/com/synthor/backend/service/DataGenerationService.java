@@ -145,7 +145,7 @@ public class DataGenerationService {
             "BANCA NAZIONALE DEL LAVORO S.P.A. (IN FORMA CONTRATTA BNL S.P.A.)", "AS SEB Pank", "KEY BANK", "SECURITY BANK"
     };
 
-// Predefined data arrays are assumed to be here...
+    // Predefined data arrays are assumed to be here...
 
     public DataGenerationService(AiApiService aiApiService) {
         this.koreanFaker = new Faker(new Locale("ko"));
@@ -164,6 +164,12 @@ public class DataGenerationService {
                 AiApiResponse aiResponse = aiApiService.suggestFieldType(prompt);
                 if (aiResponse != null && aiResponse.getType() != null) {
                     String aiType = aiResponse.getType().trim();
+
+                    // Map AI-specific types to internal types
+                    if ("number_between_1_100".equals(aiType)) {
+                        aiType = "number"; // Convert to the internal 'number' type
+                    }
+
                     field.setType(aiType);
                     Map<String, Object> aiConstraints = aiResponse.getConstraints();
                     if (aiConstraints != null && !aiConstraints.isEmpty()) {
@@ -430,9 +436,10 @@ public class DataGenerationService {
         } else if ("currency".equals(type)) {
             return defaultFaker.currency().name();
         } else if ("number".equals(type)) {
-            int min = (Integer) constraints.getOrDefault("min", 0);
-            int max = (Integer) constraints.getOrDefault("max", 100);
-            Integer decimals = (Integer) constraints.get("decimals");
+            // AI가 제안한 제약조건(parsedConstraints)을 우선적으로 사용하고, 없으면 기존 제약조건(constraints)을 사용합니다.
+            int min = (Integer) parsedConstraints.getOrDefault("min", constraints.getOrDefault("min", 0));
+            int max = (Integer) parsedConstraints.getOrDefault("max", constraints.getOrDefault("max", 100));
+            Integer decimals = (Integer) parsedConstraints.getOrDefault("decimals", constraints.get("decimals"));
 
             if (decimals != null && decimals > 0) {
                 return defaultFaker.number().randomDouble(decimals, min, max);
