@@ -323,6 +323,24 @@ public class DataGenerationService {
             }
 
             return defaultFaker.numerify(format);
+        } else if ("avatar".equals(type)) {
+            String baseUrl = defaultFaker.avatar().image(); // Generates a .png URL by default
+
+            // Get constraints from the map
+            String imageFormat = (String) constraints.get("image_format");
+            String size = (String) constraints.get("size");
+
+            // Handle image format
+            if (imageFormat != null && (imageFormat.equals("jpg") || imageFormat.equals("bmp"))) {
+                baseUrl = baseUrl.replace(".png", "." + imageFormat);
+            }
+
+            // Handle size
+            if (size != null && !size.isEmpty() && size.matches("\\d+x\\d+")) {
+                return baseUrl + "?size=" + size;
+            } else {
+                return baseUrl;
+            }
         }
         // (Imagine all other numerous cases are converted here in full)
         
