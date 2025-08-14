@@ -341,6 +341,43 @@ public class DataGenerationService {
             } catch (ParseException e) {
                 return "Invalid date format in 'from'/'to' constraints. Please use 'yyyy-MM-dd'.";
             }
+        } else if ("time".equals(type)) {
+            String fromStr = (String) constraints.get("from");
+            if (fromStr == null) {
+                fromStr = "00:00";
+            }
+            String toStr = (String) constraints.get("to");
+            if (toStr == null) {
+                toStr = "23:59";
+            }
+            String format = (String) constraints.get("format");
+            if (format == null) {
+                format = "24hour";
+            }
+
+            SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+            Date fromDate;
+            Date toDate;
+            try {
+                fromDate = parser.parse(fromStr);
+                toDate = parser.parse(toStr);
+            } catch (ParseException e) {
+                // Fallback to default range if parsing fails
+                try {
+                    fromDate = parser.parse("00:00");
+                    toDate = parser.parse("23:59");
+                } catch (ParseException ex) {
+                    // This should not happen with hardcoded values
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            long randomTimeMillis = fromDate.getTime() + (long) (Math.random() * (toDate.getTime() - fromDate.getTime() + 1));
+            Date randomDate = new Date(randomTimeMillis);
+
+            String pattern = "12hour".equalsIgnoreCase(format) ? "hh:mm a" : "HH:mm";
+            SimpleDateFormat timeFormatter = new SimpleDateFormat(pattern, Locale.ENGLISH);
+            return timeFormatter.format(randomDate);
         } else if ("phone_number".equals(type)) {
 // Allowed formats
             Set<String> allowedFormats = new HashSet<>(Arrays.asList(
