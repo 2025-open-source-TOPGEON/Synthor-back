@@ -263,6 +263,10 @@ public class DataGenerationService {
             return koreanFaker.address().fullAddress();
         } else if ("korean_address_line_2".equals(type)) {
             return KOREAN_ADDRESS_LINE_2_EXAMPLES[defaultFaker.random().nextInt(KOREAN_ADDRESS_LINE_2_EXAMPLES.length)];
+        } else if ("korean_city".equals(type)) {
+            return koreanFaker.address().city();
+        } else if ("korean_state".equals(type)) {
+            return koreanFaker.address().state();
 
 // --- [ENGLISH] Address ---
         } else if ("address".equals(type)) {
@@ -279,6 +283,16 @@ public class DataGenerationService {
             return ADDRESS_LINE_2_EXAMPLES[defaultFaker.random().nextInt(ADDRESS_LINE_2_EXAMPLES.length)];
         } else if ("street_address".equals(type)) {
             return defaultFaker.address().streetAddress();
+        } else if ("city".equals(type)) {
+            return defaultFaker.address().city();
+        } else if ("state".equals(type)) {
+            Object options = constraints.get("options");
+            if (options instanceof List && !((List<?>) options).isEmpty()) {
+                List<?> optionsList = (List<?>) options;
+                return optionsList.get(defaultFaker.random().nextInt(optionsList.size())).toString();
+            } else {
+                return defaultFaker.address().state();
+            }
         } else if ("number".equals(type)) {
             int min = (Integer) constraints.getOrDefault("min", 0);
             int max = (Integer) constraints.getOrDefault("max", 100);
