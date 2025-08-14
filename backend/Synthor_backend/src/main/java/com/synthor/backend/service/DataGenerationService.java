@@ -131,6 +131,16 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.address().country();
             }
+        } else if ("number".equals(type)) {
+            int min = (Integer) constraints.getOrDefault("min", 0);
+            int max = (Integer) constraints.getOrDefault("max", 100);
+            Integer decimals = (Integer) constraints.get("decimals");
+
+            if (decimals != null && decimals > 0) {
+                return defaultFaker.number().randomDouble(decimals, min, max);
+            } else {
+                return defaultFaker.number().numberBetween(min, max);
+            }
         }
         // (Imagine all other numerous cases are converted here in full)
         
