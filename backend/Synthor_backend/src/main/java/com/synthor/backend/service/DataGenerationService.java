@@ -141,6 +141,36 @@ public class DataGenerationService {
             } else {
                 return defaultFaker.number().numberBetween(min, max);
             }
+        } else if ("datetime".equals(type)) {
+            Set<String> allowedFormats = new HashSet<>(Arrays.asList(
+                "M/d/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "yyyy-MM", "d/M/yyyy", "dd/MM/yyyy"
+            ));
+            String fromStr = (String) constraints.get("from");
+            String toStr = (String) constraints.get("to");
+            String format = (String) constraints.get("format");
+
+            if (format != null && !allowedFormats.contains(format)) {
+                return "Invalid format provided. Supported formats are: " + allowedFormats;
+            }
+            if (format == null) {
+                format = "MM/dd/yyyy";
+            }
+
+            SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat formatter = new SimpleDateFormat(format);
+            try {
+                Date dateToFormat;
+                if (fromStr != null && toStr != null) {
+                    Date fromDate = parser.parse(fromStr);
+                    Date toDate = parser.parse(toStr);
+                    dateToFormat = defaultFaker.date().between(fromDate, toDate);
+                } else {
+                    dateToFormat = defaultFaker.date().birthday();
+                }
+                return formatter.format(dateToFormat);
+            } catch (ParseException e) {
+                return "Invalid date format in 'from'/'to' constraints. Please use 'yyyy-MM-dd'.";
+            }
         }
         // (Imagine all other numerous cases are converted here in full)
         
