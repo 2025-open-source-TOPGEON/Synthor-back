@@ -211,7 +211,8 @@ public class DataGenerationService {
     }
 
     private Object generateValueByType(FieldRequest field) {
-        String type = field.getType() != null ? field.getType().replaceAll("[^a-zA-Z0-9_]", "") : "";
+        String type = field.getType() != null ? field.getType().replaceAll("[^a-zA-Z0-9_]", "").toLowerCase() : "";
+        System.out.println(">>> [DEBUG] Processing type: " + type); // Debugging line
         Map<String, Object> constraints = field.getConstraints();
         Map<String, Object> parsedConstraints = field.getParsedConstraints();
 
@@ -224,6 +225,10 @@ public class DataGenerationService {
             return koreanFaker.name().firstName();
         } else if ("korean_last_name".equals(type)) {
             return koreanFaker.name().lastName();
+        } else if ("korean_gender".equals(type)) {
+            return KOREAN_GENDERS[defaultFaker.random().nextInt(KOREAN_GENDERS.length)];
+        } else if ("korean_gender_with_non_binary".equals(type)) {
+            return KOREAN_GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(KOREAN_GENDERS_WITH_NON_BINARY.length)];
         
         // --- [ENGLISH] Person & Personal Info ---
         } else if ("full_name".equals(type)) {
@@ -232,6 +237,10 @@ public class DataGenerationService {
             return defaultFaker.name().firstName();
         } else if ("last_name".equals(type)) {
             return defaultFaker.name().lastName();
+        } else if ("gender".equals(type)) {
+            return GENDERS[defaultFaker.random().nextInt(GENDERS.length)];
+        } else if ("gender_with_non_binary".equals(type)) {
+            return GENDERS_WITH_NON_BINARY[defaultFaker.random().nextInt(GENDERS_WITH_NON_BINARY.length)];
         
         // --- Internet & Tech ---
         } else if ("username".equals(type)) {
