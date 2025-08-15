@@ -447,18 +447,21 @@ public class DataGenerationService {
                 return defaultFaker.number().numberBetween(min, max);
             }
         } else if ("datetime".equals(type)) {
-            Set<String> allowedFormats = new HashSet<>(Arrays.asList(
-                    "M/d/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "yyyy-MM", "d/M/yyyy", "dd/MM/yyyy"
-            ));
-            String fromStr = (String) constraints.get("from");
-            String toStr = (String) constraints.get("to");
-            String format = (String) constraints.get("format");
+            // AI가 제안한 제약조건(parsedConstraints)을 우선적으로 사용하고, 없으면 사용자가 직접 입력한 제약조건(constraints)을 사용합니다.
+            String fromStr = (String) parsedConstraints.getOrDefault("from", constraints.get("from"));
+            String toStr = (String) parsedConstraints.getOrDefault("to", constraints.get("to"));
+            String format = (String) parsedConstraints.getOrDefault("format", constraints.get("format"));
 
-            if (format != null && !allowedFormats.contains(format)) {
-                return "Invalid format provided. Supported formats are: " + allowedFormats;
-            }
             if (format == null) {
-                format = "MM/dd/yyyy";
+                format = "yyyy-MM-dd"; // 기본 포맷을 표준 형식으로 변경
+            }
+
+            // AI가 반환하는 ISO 8601 형식의 날짜(e.g., "2023-01-05T00:00:00")를 파싱하기 위해 T 이하를 제거합니다.
+            if (fromStr != null && fromStr.contains("T")) {
+                fromStr = fromStr.substring(0, fromStr.indexOf("T"));
+            }
+            if (toStr != null && toStr.contains("T")) {
+                toStr = toStr.substring(0, toStr.indexOf("T"));
             }
 
             SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
@@ -468,9 +471,19 @@ public class DataGenerationService {
                 if (fromStr != null && toStr != null) {
                     Date fromDate = parser.parse(fromStr);
                     Date toDate = parser.parse(toStr);
+                    if (toDate.before(fromDate)) { // to가 from보다 앞이면 교체
+                        Date temp = fromDate;
+                        fromDate = toDate;
+                        toDate = temp;
+                    }
                     dateToFormat = defaultFaker.date().between(fromDate, toDate);
                 } else {
-                    dateToFormat = defaultFaker.date().birthday();
+                    // 제약조건이 없으면 기본적으로 지난 1년 사이의 날짜를 생성합니다.
+                    Calendar cal = Calendar.getInstance();
+                    Date toDate = cal.getTime();
+                    cal.add(Calendar.YEAR, -1);
+                    Date fromDate = cal.getTime();
+                    dateToFormat = defaultFaker.date().between(fromDate, toDate);
                 }
                 return formatter.format(dateToFormat);
             } catch (ParseException e) {
