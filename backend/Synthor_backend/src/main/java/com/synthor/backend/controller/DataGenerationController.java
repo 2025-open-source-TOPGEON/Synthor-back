@@ -1,7 +1,9 @@
 package com.synthor.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.synthor.backend.dto.AiApiAutoGenerateResponse;
 import com.synthor.backend.dto.DataGenerationRequest;
+import com.synthor.backend.service.AiApiService;
 import com.synthor.backend.service.DataGenerationService;
 import com.synthor.backend.service.DataFormattingService;
 import com.synthor.backend.service.NlpService;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +27,13 @@ public class DataGenerationController {
     private final DataGenerationService dataGenerationService;
     private final DataFormattingService dataFormattingService;
     private final NlpService nlpService;
+    private final AiApiService aiApiService; // AiApiService 주입
 
-    public DataGenerationController(DataGenerationService dataGenerationService, DataFormattingService dataFormattingService, NlpService nlpService) {
+    public DataGenerationController(DataGenerationService dataGenerationService, DataFormattingService dataFormattingService, NlpService nlpService, AiApiService aiApiService) {
         this.dataGenerationService = dataGenerationService;
         this.dataFormattingService = dataFormattingService;
         this.nlpService = nlpService;
+        this.aiApiService = aiApiService; // 생성자에서 초기화
     }
 
     @Operation(
@@ -111,23 +116,33 @@ public class DataGenerationController {
         return ResponseEntity.ok().contentType(contentType).body(formattedData);
     }
 
+    @Operation(
+            summary = "AI 기반 필드 자동 생성",
+            description = "자연어 프롬프트를 기반으로 데이터 필드 정의(스키마)를 자동으로 생성합니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "필드 생성을 위한 자연어 프롬프트",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "쇼핑몰 예시",
+                                    value = "\"쇼핑몰에서 사용자 등록을 위한 정보\""
+                            )
+                    )
+            )
+    )
     @PostMapping("/ai-generate")
-    public ResponseEntity<String> aiGenerateData(
-            @RequestBody String query,
-            @Parameter(description = "반환받을 데이터 포맷 (json, csv, html, sql, xml, ldif)", example = "json")
-            @RequestParam(defaultValue = "json") String format) throws JsonProcessingException {
-        // 1. Parse the natural language query using the NLP service
-        DataGenerationRequest request = nlpService.parseQuery(query);
+    public ResponseEntity<Object> aiGenerateData(@RequestBody String prompt) {
+        // AI 서비스를 호출하여 필드 정의를 가져옵니다.
+        AiApiAutoGenerateResponse response = aiApiService.autoGenerateFieldsFromPrompt(prompt);
 
-        // 2. Generate data using the existing data generation service
-        List<Map<String, Object>> generatedData = dataGenerationService.generateData(request);
+        if (response == null) {
+            // AI API 호출 실패 시 에러 응답을 반환합니다.
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get response from AI service.");
+        }
 
-        // 3. Format the data into the requested format
-        String formattedData = dataFormattingService.format(generatedData, format);
-
-        // 4. Return the response with the appropriate content type
-        MediaType contentType = getContentTypeForFormat(format);
-        return ResponseEntity.ok().contentType(contentType).body(formattedData);
+        // 성공 시 AI API의 응답을 그대로 클라이언트에게 반환합니다.
+        return ResponseEntity.ok(response);
     }
 
     /**
