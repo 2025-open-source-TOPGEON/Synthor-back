@@ -447,16 +447,27 @@ public class DataGenerationService {
                 return defaultFaker.number().numberBetween(min, max);
             }
         } else if ("datetime".equals(type)) {
-            // AI가 제안한 제약조건(parsedConstraints)을 우선적으로 사용하고, 없으면 사용자가 직접 입력한 제약조건(constraints)을 사용합니다.
-            String fromStr = (String) parsedConstraints.getOrDefault("from", constraints.get("from"));
-            String toStr = (String) parsedConstraints.getOrDefault("to", constraints.get("to"));
-            String format = (String) parsedConstraints.getOrDefault("format", constraints.get("format"));
+            // --- Start of targeted fix ---
 
-            if (format == null) {
-                format = "yyyy-MM-dd"; // 기본 포맷을 표준 형식으로 변경
+            // 1. Decide which constraints to use to fix precedence
+            final Map<String, Object> activeConstraints;
+            if (field.getParsedConstraints() != null && !field.getParsedConstraints().isEmpty()) {
+                activeConstraints = field.getParsedConstraints();
+            } else {
+                activeConstraints = field.getConstraints();
             }
 
-            // AI가 반환하는 ISO 8601 형식의 날짜(e.g., "2023-01-05T00:00:00")를 파싱하기 위해 T 이하를 제거합니다.
+            // 2. Get values from the active constraints map safely
+            Object fromObj = activeConstraints.get("from");
+            Object toObj = activeConstraints.get("to");
+            Object formatObj = activeConstraints.get("format");
+
+            String fromStr = (fromObj == null) ? null : String.valueOf(fromObj);
+            String toStr = (toObj == null) ? null : String.valueOf(toObj);
+            String outputFormat = (formatObj == null) ? null : String.valueOf(formatObj);
+
+            // 3. Enforce yyyy-MM-dd for input and clean up AI dates
+            String inputFormat = "yyyy-MM-dd";
             if (fromStr != null && fromStr.contains("T")) {
                 fromStr = fromStr.substring(0, fromStr.indexOf("T"));
             }
@@ -464,8 +475,25 @@ public class DataGenerationService {
                 toStr = toStr.substring(0, toStr.indexOf("T"));
             }
 
-            SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat formatter = new SimpleDateFormat(format);
+            // 4. Handle and correct the output format
+            Set<String> allowedOutputFormats = new HashSet<>(Arrays.asList(
+                    "M/d/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "yyyy-MM", "d/M/yyyy", "dd/MM/yyyy"
+            ));
+            if (outputFormat == null) {
+                outputFormat = "yyyy-MM-dd"; // Default output format
+            } else {
+                // Be lenient with user input, e.g. accept mm/dd/yyyy
+                String correctedFormat = outputFormat.replace("mm", "MM");
+                if (allowedOutputFormats.contains(correctedFormat)) {
+                    outputFormat = correctedFormat;
+                } else if (!allowedOutputFormats.contains(outputFormat)) {
+                    return "Invalid output format provided: '" + outputFormat + "'. Supported formats are: " + allowedOutputFormats;
+                }
+            }
+
+            // 5. Parse and Format
+            SimpleDateFormat parser = new SimpleDateFormat(inputFormat, Locale.ENGLISH);
+            SimpleDateFormat formatter = new SimpleDateFormat(outputFormat, Locale.ENGLISH);
             try {
                 Date dateToFormat;
                 if (fromStr != null && toStr != null) {
@@ -478,7 +506,7 @@ public class DataGenerationService {
                     }
                     dateToFormat = defaultFaker.date().between(fromDate, toDate);
                 } else {
-                    // 제약조건이 없으면 기본적으로 지난 1년 사이의 날짜를 생성합니다.
+                    // Default to last year if no range is given
                     Calendar cal = Calendar.getInstance();
                     Date toDate = cal.getTime();
                     cal.add(Calendar.YEAR, -1);
@@ -487,8 +515,9 @@ public class DataGenerationService {
                 }
                 return formatter.format(dateToFormat);
             } catch (ParseException e) {
-                return "Invalid date format in 'from'/'to' constraints. Please use 'yyyy-MM-dd'.";
+                return "Invalid date format in 'from'/'to' constraints. Dates must be in 'yyyy-MM-dd' format. Error: " + e.getMessage();
             }
+            // --- End of targeted fix ---
         } else if ("time".equals(type)) {
             String fromStr = (String) constraints.get("from");
             if (fromStr == null) {
