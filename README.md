@@ -9,6 +9,12 @@ Synthor 백엔드 프로젝트는 AI와 NLP 기술을 활용하여 사용자의 
 - **RESTful API**: 데이터 생성을 위한 표준 RESTful API 엔드포인트를 제공합니다.
 - **컨테이너화 지원**: Docker를 통해 어떤 환경에서든 쉽고 빠르게 배포하고 실행할 수 있습니다.
 
+## 🚀 Live API & Documentation
+
+프로젝트를 직접 실행하지 않고도 아래 링크에서 실시간으로 API를 테스트하고 문서를 확인할 수 있습니다.
+
+**[Live API 바로가기 (Swagger UI)](https://synthor-back.onrender.com/swagger-ui/index.html#/data-generation-controller)**
+
 ## 🛠️ 기술 스택 (Tech Stack)
 
 - **Language**: Java 17
@@ -38,7 +44,7 @@ Synthor 백엔드 프로젝트는 AI와 NLP 기술을 활용하여 사용자의 
     server.port=8080
 
     # External AI API URLs (example)
-    ai.api.auto-generate.url=your_api_key
+    ai.api.auto-generate.url=https://synthor-ai.onrender.com/api/fields/auto-generate
     ```
 
 3.  **프로젝트 빌드 (Build the project)**
@@ -189,7 +195,7 @@ Synthor API는 두 가지 주요 데이터 생성 방식을 제공합니다. 사
 
 ```bash
 curl -X 'POST' \
-  'http://localhost:8081/api/data/manual-generate?format=json' \
+  'http://localhost:8080/api/data/manual-generate?format=json' \
   -H 'accept: */*' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -245,7 +251,7 @@ curl -X 'POST' \
 
 ```bash
 curl -X 'POST' \
-  'http://localhost:8081/api/data/ai-generate?format=json' \
+  'http://localhost:8080/api/data/ai-generate?format=json' \
   -H 'accept: */*' \
   -H 'Content-Type: application/json' \
   -d '"쇼핑몰에서 사용자 등록을 위한 정보 100개"'
