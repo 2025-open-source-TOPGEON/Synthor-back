@@ -37,8 +37,8 @@ Synthor 백엔드 프로젝트는 AI와 NLP 기술을 활용하여 사용자의 
     # application.properties
     server.port=8080
 
-    # External AI API URLs (example)
-    ai.api.auto-generate.url=your_api_key
+    # AI API Key (Example)
+    # api.gemini.key=YOUR_API_KEY
     ```
 
 3.  **프로젝트 빌드 (Build the project)**
@@ -72,24 +72,23 @@ docker run -p 8080:8080 synthor-backend
 .
 ├── src/main/java/com/synthor/backend
 │   ├── config
-│   │   └── WebConfig.java                  # 웹 관련 설정 (CORS 정책 등)
+│   │   └── WebConfig.java            # 웹 관련 설정 (CORS 정책 등)
 │   ├── controller
-│   │   └── DataGenerationController.java   # 데이터 생성 API 요청을 처리하는 컨트롤러
+│   │   └── DataGenerationController.java # 데이터 생성 API 요청을 처리하는 컨트롤러
 │   ├── dto
-│   │   ├── AiApiAutoGenerateResponse.java  # AI API 자동 생성 응답 DTO
-│   │   ├── AiApiRequest.java               # AI API 요청 DTO
-│   │   ├── AiApiResponse.java              # AI API 응답 DTO
-│   │   ├── DataGenerationRequest.java      # 클라이언트의 데이터 생성 요청 DTO
-│   │   ├── FieldDetail.java                # 필드 상세 정보를 담는 DTO
-│   │   └── FieldRequest.java               # 개별 필드 요청을 담는 DTO
+│   │   ├── AiApiAutoGenerateResponse.java # AI API 자동 생성 응답 DTO
+│   │   ├── AiApiRequest.java         # AI API 요청 DTO
+│   │   ├── AiApiResponse.java        # AI API 응답 DTO
+│   │   ├── DataGenerationRequest.java  # 클라이언트의 데이터 생성 요청 DTO
+│   │   ├── FieldDetail.java          # 필드 상세 정보를 담는 DTO
+│   │   └── FieldRequest.java         # 개별 필드 요청을 담는 DTO
 │   └── service
-│       ├── AiApiService.java               # 외부 AI API와 통신하는 서비스
-│       ├── DataFormattingService.java      # 생성된 데이터의 포맷팅을 담당하는 서비스
-│       ├── DataGenerationService.java      # 데이터 생성 핵심 비즈니스 로직을 처리하는 서비스
-│       └── NlpService.java                 # 자연어 처리(NLP)를 담당하는 서비스
+│       ├── AiApiService.java         # 외부 AI API와 통신하는 서비스
+│       ├── DataFormattingService.java  # 생성된 데이터의 포맷팅을 담당하는 서비스
+│       ├── DataGenerationService.java  # 데이터 생성 핵심 비즈니스 로직을 처리하는 서비스
+│       └── NlpService.java           # 자연어 처리(NLP)를 담당하는 서비스
 ├── src/main/resources
-│   └── application.properties              # 애플리케이션 설정 파일
-├── build.gradle                            # Gradle 빌드 스크립트
-└── Dockerfile                              # Docker 이미지 생성을 위한 설정 파일
-
+│   └── application.properties # 애플리케이션 설정 파일
+├── build.gradle        # Gradle 빌드 스크립트
+└── Dockerfile          # Docker 이미지 생성을 위한 설정 파일
 ```
